@@ -1,0 +1,344 @@
+---
+title: "Code for Matching Lecture"
+author: "Alex Hoagland"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r header}
+################################################################################
+# I like to include several additional notes in the header of my files here:
+#
+# Last modified: 8/9/2024
+#
+### PURPOSE:
+  # Lecture on matching
+# 
+### NOTES:
+  # - uses the Tidyverse package and Dplyr
+  # - the main package I like to use is the "MatchIt" package
+################################################################################
+
+
+### 0. Load the packages we will need for this file ####
+library(tidyverse) # load the installed package for each new session of R
+library(broom)
+library(readxl) # Read in data
+library(modelsummary) # For making regression tables
+library(causaldata) # Useful toy data sets
+library(here) # Helpful in working with directories and projects
+library(vtable) # For making balance tables
+library(MatchIt) # Main matching package
+# library(cchsflow) # a useful package for working with CCHS data
+
+set.seed(03262020) # Setting the seed helps to make random number generators give us the same numbers across machines
+################################################################################
+```
+
+## What if I don't match?
+
+Suppose that we are interested in the effect of having health insurance on total health expenditures. Let's load some sample data (don't forget to have your project set up so that `here()` knows where to look).
+
+```{r load-data}
+# This data comes from the PUMF of the CCHS (only from 2019-2020)
+# mydata <- read_csv(here("CCHS_2019-2020_CSV/Data", "pumf_cchs.csv"))
+# vars_to_keep <- c("ADM_RNO1", "VERDATE", "REFPER", "GEN_005", "INCG015", "INCDGHH", 
+#                    "DHHGAGE","DHH_SEX", "DHHGMS", "SDCDVIMM", "SDCDVFLA",
+#                   "GEOGPRV","EHG2DVH3") 
+#   # Perceived health, main income sources, covariates
+#   # note: we don't have data on kids in the home, urbanicity, home ownership 
+# 
+# # Trim and save the data
+# mydata <- mydata %>% select(vars_to_keep) %>% na.omit()
+# write_csv(mydata, here("CCHS_2019-2020_CSV/Data", "pumf_cchs_trimmed.csv"))
+mydata <- read_csv(here("CCHS_2019-2020_CSV/Data", "pumf_cchs_trimmed.csv"))
+
+# Define our exposure variable: main income that is not from wages (note: why?)
+mydata <- mydata %>% mutate(treated = as.numeric(INCG015 == 2)) %>% filter(INCG015 != 9)
+
+# Keep only adults (age 18-64)
+levels(factor(mydata$DHHGAGE)) # need to look at the documentation
+mydata <- mydata %>% filter(DHHGAGE > 1 & DHHGAGE < 5)
+mydata %>% select(treated) %>% summary() # about 16% of our sample is treated?
+
+# Now create our outcome variable
+levels(factor(mydata$GEN_005))
+mydata <- mydata %>% mutate(outcome_poor = ifelse(GEN_005 == 4 | GEN_005 == 5, 1, 0)) %>% 
+  filter(GEN_005 < 7) # 1 if poor health, 0 otherwise, drop those without responses
+mydata %>% select(outcome_poor) %>% summary() # about 12% of our sample reports poor health
+
+# first, simple regression -- what is effect of insurance on expenses? 
+m1 <- lm(outcome_poor ~ treated,data=mydata)
+msummary(list(m1),
+         vcov=c("robust"),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+```
+ 
+ This would suggest that having unemployment benefits *increases* the rate of poor health! But there are important differences in treated and control groups that might make this an artifact of **selection**
+ 
+```{r viz-selection}
+levels(factor(mydata$INCDGHH))
+mydata %>% 
+  filter(INCDGHH < 9) %>% # drop those with missing income data
+  mutate(INCDGHH = factor(INCDGHH)) %>%
+  group_by(INCDGHH,treated) %>% summarize(count = n()) %>% 
+  ungroup() %>% # group_by(treated) %>% 
+  mutate(count = count / sum(count) * 100) %>% # what are we doing here? 
+  ggplot(aes(fill=factor(treated), y=count,x=INCDGHH)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  geom_bar(position="dodge",stat="identity") + 
+  theme_classic() + labs(x = "Total Household Income Group", y = "%", fill = "Treated")
+```
+
+## Subclassification example
+
+Let's start with matching based on a single variable: patient age group. This is already binned into just three categories: 18-34, 35-49, and 50-64. In each bin, we then construct the differences in the likelihood of ``poor health`` between those on benefits and not. This rests on the assumption that within each bin, there is no (or less) selection between benefit takeup. We then weight these differences by the relative size of each group.
+
+```{r subclass-differences}
+# For each bin, construct the difference in expenses by insurance category 
+bin_means <- mydata %>% group_by(DHHGAGE,treated) %>% 
+  summarize(outcome_poor = mean(outcome_poor)) %>% 
+    # Creates bin/group means 
+group_by(DHHGAGE) %>% summarize(diff = outcome_poor[2] - outcome_poor[1])
+bin_means # How do we interpret these? 
+
+# Create bins based on control group (uninsured)
+obs = nrow(mydata %>% filter(treated == 0))
+
+wt2 <- mydata %>% 
+  filter(DHHGAGE == 2 & treated == 0) %>%
+  nrow(.)/obs
+
+wt3 <- mydata %>%
+  filter(DHHGAGE == 3 & treated == 0) %>%
+  nrow(.)/obs
+
+wt4 <- mydata %>% 
+  filter(DHHGAGE == 4 & treated == 0) %>%
+  nrow(.)/obs
+
+wtdiff <- as.numeric(bin_means[1,2]*wt2 + bin_means[2,2]*wt3 + bin_means[3,2]*wt4)
+bin_means %>% ggplot(aes(x=DHHGAGE,y=diff)) + geom_point(size=2) + 
+  geom_hline(yintercept = wtdiff, linetype='dashed',color='blue') + 
+  theme_classic() + 
+  labs(x="Age Group", y="Difference in Pr(Poor Health), Treated - Untreated")
+```
+
+Using this adjustment changes the ATE from 0.16 to 0.14. But have we dealt with all the selection? 
+
+### On your own: subclassification packages
+
+In case you are curious, there are helpful packages for subclassification matching, including ``stratamatch`` and ``optmatch``. See this chunk below for an example, although you will have to modify the code to get it to run.
+
+```{r example-subclassification,eval=F}
+  # Do this with package stratamatch (https://cran.r-project.org/web/packages/stratamatch/vignettes/Intro_to_stratamatch.html)
+  library(stratamatch)
+  library(optmatch) # Used for matching stratified data
+
+  m.strat <- manual_stratify(data=mydata,coverage ~ bin)
+  summary(m.strat)
+  m.strat$analysis_set # Analysis data
+  m.strat$issue_table # Any issues with strata
+  plot(m.strat, type = "hist", propensity = coverage ~ bin) # Look at propensity scores
+  mymatch <- strata_match(m.strat, coverage ~ bin, k = 1) # Match the data
+  summary(mymatch)
+  matched_data <- m.strat$analysis_set
+  matched_data$match <- as.character(mymatch)
+  matched_data %>% filter(!is.na(match)) %>% group_by(match) %>%
+    arrange(match,coverage) %>%
+    summarise(diff = expenses[2]-expenses[1]) %>%
+    ungroup() %>% summarize(mean = mean(diff)) # Matched differences are $5559, close to the method above
+
+  # We can add multiple variables
+  m.strat <- manual_stratify(data=mydata,coverage ~ bin + smoker + children)
+  summary(m.strat)
+  m.strat$analysis_set
+  m.strat$issue_table
+  plot(m.strat, type = "hist", propensity = coverage ~ bin + smoker + children)
+  mymatch <- strata_match(m.strat, coverage ~ bin + smoker + children, k = 1) # Match the data
+  summary(mymatch)
+  matched_data <- m.strat$analysis_set
+  matched_data$match <- as.character(mymatch)
+  matched_data %>% filter(!is.na(match)) %>% group_by(match) %>%
+    arrange(match,coverage) %>%
+    summarise(diff = expenses[2]-expenses[1]) %>%
+    ungroup() %>% summarize(mean = mean(diff)) # Now, matched differences go all the way down to -$45.8!
+```
+
+## Exact matching: Multiple Variables
+
+This chunk can help you expand the matching beyond just age to include multiple variables, based only on exact matching. Also will have to update this code chunk to your particular setting. 
+
+
+```{r exact-1, eval=F}
+treated <- mydata %>% filter(coverage == 1)
+control <- mydata %>% filter(coverage == 0)
+matched_data <- inner_join(treated,control,by=c('bmi','children','smoker'))
+matched_data %>% mutate(diff = expenses.x-expenses.y) %>% 
+  group_by(bmi,children,smoker) %>% # Create one average per cell
+  summarize(diff = mean(diff), nobs = n()) %>% 
+  ungroup() %>% # Now overall (weighted) average
+  summarize(diff = weighted.mean(diff,nobs)) # Estimated effect of insurance: $42
+
+  ## Now, the estimated effect of insurance has dropped to a \$42 increase in expenditures. But notice how much our sample size has been reduced! 
+
+matched_data <- inner_join(treated,control,by=c('bin','children','smoker'))
+matched_data %>% mutate(diff = expenses.x-expenses.y) %>% 
+  group_by(bin,children,smoker) %>% # Create one average per cell
+  summarize(diff = mean(diff), nobs=n()) %>% 
+  ungroup() %>% # Now overall average
+  summarize(diff = weighted.mean(diff,nobs)) # Estimated effect of insurance: +$155
+```
+
+## Nearest Neighbor Matching
+
+So let's expand the criteria to nearest neighbor matching. Let's match on all the covariates we have: 
+
+```{r prep-covariates}
+mydata <- mydata %>% mutate(cov_age_3 = as.numeric(DHHGAGE == 3), 
+                            cov_age_4 = as.numeric(DHHGAGE == 4), # what are we doing here? why? 
+                            cov_sex_2 = as.numeric(DHH_SEX == 2), 
+                            cov_marst = as.numeric(DHHGMS == 1), # married
+                            cov_immig = as.numeric(SDCDVIMM == 1), # landed immigrant
+                            cov_minority = as.numeric(SDCDVFLA == 1), # minority
+                            cov_educ_2 = as.numeric(EHG2DVH3 == 2),
+                            cov_educ_3 = as.numeric(EHG2DVH3 == 3), # household education
+                            cov_prov_11 = as.numeric(GEOGPRV == 11), # province
+                            cov_prov_12 = as.numeric(GEOGPRV == 12),
+                            cov_prov_13 = as.numeric(GEOGPRV == 13),
+                            cov_prov_24 = as.numeric(GEOGPRV == 24),
+                            cov_prov_35 = as.numeric(GEOGPRV == 35),
+                            cov_prov_46 = as.numeric(GEOGPRV == 46),
+                            cov_prov_47 = as.numeric(GEOGPRV == 47),
+                            cov_prov_48 = as.numeric(GEOGPRV == 48),
+                            cov_prov_59 = as.numeric(GEOGPRV == 59),
+                            cov_prov_60 = as.numeric(GEOGPRV == 60),
+                            inccov_2 = as.numeric(INCDGHH == 2), 
+                            inccov_3 = as.numeric(INCDGHH == 3), 
+                            inccov_4 = as.numeric(INCDGHH == 4), 
+                            inccov_5 = as.numeric(INCDGHH == 5)) %>% 
+  filter(INCDGHH < 9, DHHGMS < 9, SDCDVIMM < 9, SDCDVFLA < 9, EHG2DVH3 < 9) # Remove missing values
+  # note: can we just use these as factor? It would be easier (e.g., with GEOGPRV) but makes formulas harder later on
+```
+
+Now we can use the ``MatchIt`` package to do some nearest neighbor matching. How does this compare to a propensity score regression? 
+
+```{r nn-1}
+covariates <- mydata %>% select(starts_with("cov")) %>% names() # a list of all the covariates
+myformula <- as.formula(paste("treated",paste(covariates, collapse="+"), sep="~")) # what does this do? 
+
+mymatches_nn <- matchit(myformula, 
+                     data=mydata,
+                     method='nearest', # Matching method -- see ?matchit
+                     distance='scaled_euclidean', # metric for distance
+                     replace=TRUE, # do we use replacements in matches?
+                     ratio=10, # how many matches are we looking for?
+                     verbose=TRUE) # print output of package process
+summary(mymatches_nn) # Look at new (A) balance and (B) sample size
+# View(mymatches_nn) # Look at objects returned if you want
+
+# What does this look like just as a propensity score? What does this tell us? 
+psm <- lm(myformula,data=mydata)
+msummary(list(psm),
+         vcov=c("robust"),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+# can we predict a propensity score for each observation?
+mydata <- mydata %>% mutate(propscore = fitted(psm))
+hist(mydata$propscore)
+```
+
+Now that we have matched the data, we can estimate our model just as a difference in means: 
+```{r nn-2}
+regdata_nn <- match.data(mymatches_nn)
+nn_match <- lm(outcome_poor ~ treated,
+               data = regdata_nn,
+               weights=weights)
+msummary(list("OLS"=m1, "Nearest Neighbor"=nn_match),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+``` 
+
+Now, unemployment benefits (or what we're measuring: not relying on labour income) is still associated with worse poor health, with an increase of about 13.4 percentage points. How do we interpret this? Why do we think it's different from what the authors found?
+
+## Propensity score matching
+
+Finally, how might we implement propensity score matching in our scenario? We can use the same package, if we want! (It's very versatile)
+
+```{r psm-1}
+mymatches_psm <- matchit(myformula, # Matching regression
+                     data=mydata,
+                     method='nearest', # Matching method -- see ?matchit
+                     distance='glm', # generalized linear model for propensity
+                     replace=TRUE, # do we use replacements in matches?
+                     verbose=TRUE) # print output of package process
+summary(mymatches_psm) # Look at new balance and sample size
+```
+
+When using propensity score matching, we need to make sure that our **common support assumption** holds in practice, so that we are truly (starting to) match(ing) in an appropriate way. We can test this visually: 
+
+```{r psm-2} 
+regdata_psm <- match.data(mymatches_psm)
+hist(regdata_psm$distance) # Look at overall distribution of propensity scores
+
+# Test common support assumption 
+ggplot(regdata_psm,aes(x=distance, fill = factor(treated))) + 
+  geom_histogram(binwidth = .05,color='black', position = 'dodge') + 
+  theme_minimal() + 
+  labs(x="Propensity Score", y="Count",fill="Treated") # What should we be looking for here? 
+```
+
+It looks like our common support assumption won't be a problem here. Hence, we can run our regression: 
+
+```{r psm-3}
+ps_match <- lm(outcome_poor ~ treated,
+               data = regdata_psm,
+               weights=1/distance) 
+ps_match2 <- lm(outcome_poor ~ treated + cov_prov_11 + cov_prov_12 + cov_prov_13 + cov_prov_24 + cov_prov_35 + cov_prov_46 + cov_prov_47 + cov_prov_48 + cov_prov_59 + cov_prov_60,
+               data = regdata_psm,
+               weights=1/distance) 
+msummary(list("OLS"=m1, "Nearest Neighbor"=nn_match, "Propensity Score"=ps_match, "Propensity Score with Covariates"=ps_match2),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+```
+
+## Matching Best Practices
+
+Here are some code chunks for best practices, including: 
+* Making a balance table (note: lots of ways to do this, and you want to add bells and whistles to make your tables look nice/easy to read!)
+* Testing common support (copied from above)
+* Trimming low-quality matches (shown here for PSM matching)
+
+```{r best-practices}
+# Balance table
+sumtable(data=mydata,group="treated",group.test=TRUE,title="Unmatched Sample") 
+sumtable(data=regdata_psm,group="treated",group.test=TRUE,title="Matched Sample",
+         group.weights="weights")
+# how can you improve these tables? 
+
+# Common support (copied from above)
+ggplot(regdata_psm,aes(x=distance, fill = factor(treated))) + 
+  geom_histogram(binwidth = .05,color='black', position='dodge') + 
+  theme_minimal() + 
+  labs(x="Propensity Score", y="Count",fill="Treated")
+
+# Trim observations with high/low propensity scores
+ps_match_trim <- lm(outcome_poor ~ treated + cov_prov_11 + cov_prov_12 + cov_prov_13 + cov_prov_24 + cov_prov_35 + cov_prov_46 + cov_prov_47 + cov_prov_48 + cov_prov_59 + cov_prov_60 + propscore,
+               data = regdata_psm[which(regdata_psm$distance>.05 & regdata_psm$distance<.95),],
+               weights=1/distance) 
+msummary(list("OLS"=m1, "Nearest Neighbor"=nn_match, "Propensity Score"=ps_match2, "Trimmed Propensity Score"=ps_match_trim),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+```
+
+## Package Citations
+```{r, include=FALSE}
+print("=============================Works Cited=============================")
+loadedNamespaces() %>%
+map(citation) %>%
+print(style = "text") # Adds citations for each package to end of .rmd file
+
+knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
+
+# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS. 
+```

@@ -1,0 +1,127 @@
+---
+title: 'Assignment 0: Solution'
+author: "Alex Hoagland"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1: 
+Here, we are just using R as a calculator to compute the following values. Any discussion you have about the problem goes here (or below the code chunk).
+
+```{r problem-1}
+27*(38-17)
+log(14^7) # note: log in computer language is base e, so we would write this as ln in math
+sqrt(436/12)
+```
+
+So you can see our answers are 567, 18.5, and 6, respectively. If you have any other takeaways, they go here. 
+
+## Problem 2: 
+This problem asked us to create and manipulate some vectors: 
+
+```{r problem-2}
+a <- c(5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160) # one way to do it
+a <- seq(5,160,5) # another way to do it
+b <- seq(87,56,-1) # this is a decreasing sequence
+  # note: did you try to get Copilot to create these? How can you? (show by copying and pasting)
+
+d <- a * b # what does this do? 
+d2 <- a %*% b # note that this is how we do matrix multiplication (why would we want this?)!
+
+d[19:21] # question (a) 
+d[which(d < 2000)] # question (b)
+length(d[which(d > 6000)]) # question (c)
+```
+The answers to the specific questions here are: 
+(a)	6555,6800, and 7035
+(b)	435, 860, 1275, and 1680
+(c)	16 elements (50%). 
+
+## Problem 3:
+Now we summarize the vector d:
+``` {r problem-3}
+# these are easy!
+sum(d)/length(d)
+mean(d)
+median(d)
+sd(d)
+
+```
+We find that the average value in `d` is 5,472.5, with a median of 5897.5 (what does that tell us about the distribution?). The standard deviation is quite large at 2608.57. 
+
+## Problem 4: 
+This problem asks us to perform matrix multiplication. 
+
+```{r problem-4}
+A <- rbind(c(7,9,12),c(2,4,13))
+B <- rbind(c(1,7,12,19),c(2,8,13,20), c(3,9,14,21))
+A %*% B
+```
+ The resulting matrix is a 2x4 matrix, which we could represent in R Markdown using LaTeX (if we wanted to): 
+$$ \left[\begin{matrix}
+61 & 229 & 369 & 565 \\
+49 & 163 & 258 & 391
+\end{matrix}\right] $$ 
+
+## Problem 5:
+Now we get to work with some data!
+
+```{r problem-5}
+# install.packages("NHSRdatasets") # note: these installation commands need to be commented out when knitting a document!
+library(NHSRdatasets)
+mydata <- ons_mortality
+
+# Now we answer the questions
+# We have two categorical variables (category_1 and category_2)
+# We have two numeric variables (counts and week_no)
+# We also have a date variable 
+summary(mydata$counts)
+summary(mydata)
+sd(mydata$counts, na.rm=T)
+
+summary(mydata$week_no)
+sd(mydata$week_no, na.rm=T)
+
+levels(factor(mydata$category_1))
+levels(factor(mydata$category_2))
+
+# give me all of the unique values of mydata$category2
+# unique(mydata$category_2)
+```
+
+These commands give some hopefully useful additional commands you can play around with to get a sense of what your data is telling you. 
+
+## Problem 6: 
+Now we will summarize that data and create a nice table. 
+
+```{r problem-6}
+library(tidyverse)
+mydata %>% filter(category_1 == "Total deaths") %>% group_by(week_no) %>% summarise(mean_deaths = mean(counts)) %>%
+knitr::kable()
+```
+
+Note that kable isn't the only option for making tables! You'll explore this more in Assignment 1, but there are many packages and you should explore the ones that make sense to you and have output you like. 
+
+## Problem 7:
+Now we will create a plot of the data. 
+
+Using your loaded data, make a scatterplot showing the relationship between week_no and (the average number of) deaths where COVID-19 was mentioned on the death certificate
+
+```{r problem-7}
+# make a scatterplot showing the relationship in mydata between week_no counts when category1 includes COVID-19
+
+# note: at least for me, copilot was useful but insufficient here!
+mydata %>% filter(category_1 == "Deaths where COVID-19 was mentioned on the death certificate (ICD-10 U07.1 and U07.2)") %>% group_by(week_no) %>% summarise(mean_deaths = mean(counts)) %>% ggplot(aes(x=week_no, y=mean_deaths)) + geom_point() + geom_smooth(method="lm") + labs(x="Week Number", y = "Average COVID Deaths") + theme_minimal()
+  # What's happening here? Did we do something wrong? 
+```
+
+Notice that the data is incomplete for this! We don't have any COVID death information after week 14 (mid-March 2020?), so we wouldn't be able to use this data to think about COVID deaths over the course of 2020. So plotting the data is really helpful before we just jump off into an analysis. 
+
+## Problem 8:
+Finally, we compile the document. Note: if you have any `install.packages` commands in your document, you should comment them out before knitting the document. 

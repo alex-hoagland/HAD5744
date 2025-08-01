@@ -1,0 +1,1983 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ipums-ddi-xslt.xsl"?>
+<codeBook ID="ddi2-b58326c7-1c4d-11e6-844a-b82a72e0b782-meps_00006.dat-www.meps.ipums.org" version="2.5" xmlns="ddi:codebook:2_5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="ddi:codebook:2_5 http://www.ddialliance.org/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd">
+  <docDscr>
+    <citation>
+      <titlStmt>
+        <titl>Codebook for an for an IPUMS Health Surveys: Medical Expenditure Panel Survey Data Extract</titl>
+        <subTitl>DDI 2.5 metadata describing the extract file  'meps_00006.dat'</subTitl>
+        <IDNo>ddi2-b58326c7-1c4d-11e6-844a-b82a72e0b782-meps_00006.dat-www.meps.ipums.org</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty affiliation="University of Minnesota">IPUMS</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer abbr="IPUMS" affiliation="University of Minnesota" role="Documentation">IPUMS</producer>
+        <prodDate date="2024-08-05">August 5, 2024</prodDate>
+        <prodPlac>IPUMS, 50 Willey Hall, 225 - 19th Avenue South, Minneapolis, MN 55455</prodPlac>
+      </prodStmt>
+      <distStmt>
+        <contact URI="https://ipums.org" affiliation="University of Minnesota">IPUMS</contact>
+      </distStmt>
+    </citation>
+  </docDscr>
+  <stdyDscr>
+    <citation>
+      <titlStmt>
+        <titl>User Extract meps_00006.dat</titl>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty affiliation="University of Minnesota">IPUMS</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer abbr="IPUMS" affiliation="University of Minnesota" role="Documentation">IPUMS</producer>
+        <prodDate date="2024-08-05">August 5, 2024</prodDate>
+        <prodPlac>IPUMS, 50 Willey Hall, 225 - 19th Avenue South, Minneapolis, MN 55455</prodPlac>
+      </prodStmt>
+      <distStmt>
+        <contact URI="https://ipums.org" affiliation="University of Minnesota">IPUMS</contact>
+      </distStmt>
+      <serStmt>
+        <serName abbr="meps">IPUMS MEPS</serName>
+        <serInfo>DOI:10.18128/D071.V2.3</serInfo>
+      </serStmt>
+      <verStmt>
+        <version date="2024-08-05"/>
+      </verStmt>
+    </citation>
+    <stdyInfo>
+      <subject>
+        <topcClas vocab="IPUMS">Technical Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Core Demographic Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Family Interrelationships Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Ethnicity/Nativity Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Total Income and Earnings Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Health Status Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Delayed/Unmet Need Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">General Coverage Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Cancer Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Health Beliefs/Behaviors Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Total Expenditures Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Office-Based Provider Visits Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Office-Based Provider Expenditures Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Outpatient Provider Visits Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Outpatient Provider Expenditures Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Emergency Room Visits Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Emergency Room Expenditures Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Hospitalizations Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Hospitalization Expenditures Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Prescription Medications Variables -- PERSON</topcClas>
+        <topcClas vocab="IPUMS">Prescription Medication Expenditures Variables -- PERSON</topcClas>
+      </subject>
+      <sumDscr ID="sdatref-24">
+        <timePrd date="2019" event="single">2019</timePrd>
+        <nation abbr="us">United States</nation>
+      </sumDscr>
+      <notes><![CDATA[Additional notes on a sample that is part of this study:  2019 MEPS
+]]></notes>
+    </stdyInfo>
+    <dataAccs>
+      <useStmt>
+        <confDec required="yes"><![CDATA[The Public Health Service Act (Section 308 (d)) provides that the data collected by the National Center for Health Statistics (NCHS), Centers for Disease Control and Prevention (CDC), may be used only for the purpose of health statistical reporting and analysis. Any effort to determine the identity of any reported case is prohibited by this law. NCHS does all it can to assure that the identity of data subjects cannot be disclosed. All direct identifiers, as well as any characteristics that might lead to identification, are omitted from the data files. Any intentional identification or disclosure of a person or establishment violates the assurances of confidentiality given to the providers of the information. 
+
+Therefore, users will: 
+
+Use the data in these data files for statistical reporting and analysis only. 
+
+Make no use of the identity of any person or establishment discovered inadvertently and advise the Director, NCHS, of any such discovery (301-458-4500). 
+
+Not link these data files with individually identifiable data from other NCHS or non-NCHS data files. 
+
+By using these data, you signify your agreement to comply with the above-stated statutorily-based requirements. ]]></confDec>
+        <contact URI="http://www.meps.ipums.org/" affiliation="IPUMS">IPUMS Health Surveys: Medical Expenditure Panel Survey</contact>
+        <citReq><![CDATA[Publications and research reports based on the MEPS database must cite it appropriately.  The citation is as follows:
+
+Lynn A. Blewett, Julia A. Rivera Drew, Daniel Backman, Annie Chen, Grace Cooper, Megan Schouweiler, Stephanie Richards, and Michael Westberry. IPUMS Health Surveys: Medical Expenditure Panel Survey, Version 2.3 [dataset]. Minneapolis, MN: IPUMS, 2023. https://doi.org/10.18128/D071.V2.3
+
+Please see http://www.meps.ipums.org/meps/citation.shtml for precise formatting of the citation.]]></citReq>
+        <conditions><![CDATA[The Public Health Service Act (Section 308 (d)) provides that the data collected by the National Center for Health Statistics (NCHS), Centers for Disease Control and Prevention (CDC), may be used only for the purpose of health statistical reporting and analysis. Any effort to determine the identity of any reported case is prohibited by this law. NCHS does all it can to assure that the identity of data subjects cannot be disclosed. All direct identifiers, as well as any characteristics that might lead to identification, are omitted from the data files. Any intentional identification or disclosure of a person or establishment violates the assurances of confidentiality given to the providers of the information. 
+
+Therefore, users must: 
+
+Use the data in these data files for statistical reporting and analysis only. 
+
+Make no use of the identity of any person or establishment discovered inadvertently and advise the Director, NCHS, of any such discovery (301-458-4500). 
+
+Not link these data files with individually identifiable data from other NCHS or non-NCHS data files. 
+
+By using these data, you signify your agreement to comply with the above-stated statutorily-based requirements. 
+
+Furthermore, users of MEPS data must agree to abide by the conditions of use. Users must agree to the following conditions:
+  
+  
+(1) Use the data in these data files for statistical reporting and analysis only 
+
+(2) Make no use of the identity of any person or establishment discovered inadvertently and advise the Director of NCHS of any such discovery (301-458-4500) 
+
+(3) Do not link these data with individually-identifiable data from NCHS or non-NCHS data files 
+
+(4) No fees may be charged for use or distribution of the data.  All persons are granted a limited license to use and distribute these data, but you may not charge a fee for the data if you distribute them to others. 
+
+(5) Cite the MEPS appropriately.  Publications and research reports based on the database must cite it appropriately.  Please see http://www.meps.ipums.org/meps/citation.shtml
+
+(6) MEPS cannot be used to study small geographic areas.  The smallest geographical areas identified in the MEPS are regions (groups of states) and a limited number of metropolitan areas.
+
+(7) This system provides individual-level data only.  The MEPS Data Extraction System will not produce tables. You will need to use a statistical software package, such as Stata, SAS, or SPSS, to analyze the downloaded data.  Alternatively, you may use the MEPS-SDA tabulator to produce tables online, without making a data extract.]]></conditions>
+        <disclaimer>The user of the data acknowledges that the original collector of the data, the authorized distributor of the data, and the relevant funding agency bear no responsibility for use of the data or for interpretations or inferences based upon such uses.</disclaimer>
+      </useStmt>
+    </dataAccs>
+    <notes><![CDATA[User-provided description:  MEPS cancer diagnosis and household spending]]></notes>
+  </stdyDscr>
+  <fileDscr ID="ExtractData">
+    <fileTxt>
+      <fileName>meps_00006.dat</fileName>
+      <fileCont>Microdata records</fileCont>
+      <fileStrc type="rectangular"/>
+      <fileType charset="ISO-8859-1">ISO-8859-1 data file</fileType>
+      <format>fixed length fields</format>
+      <filePlac>IPUMS, 50 Willey Hall, 225 - 19th Avenue South, Minneapolis, MN 55455</filePlac>
+    </fileTxt>
+  </fileDscr>
+  <dataDscr><var ID="YEAR" dcml="0" files="ExtractData" intrvl="contin" name="YEAR">
+  <location EndPos="4" StartPos="1" width="4"/>
+  <labl>Survey year</labl>
+  <txt><![CDATA[YEAR is a four-digit variable reporting the calendar year (e.g., 2003) the survey was conducted and the data were collected. YEAR indicates the survey year on the person record.]]></txt>
+  <codInstr><![CDATA[This is a 4-digit numeric variable with 0 implied decimal places]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="PERNUM" dcml="0" files="ExtractData" intrvl="contin" name="PERNUM">
+  <location EndPos="6" StartPos="5" width="2"/>
+  <labl>Person number within family/household (from reformatting)</labl>
+  <txt><![CDATA[PERNUM is an IPUMS MEPS-constructed variable that numbers all persons within each  household consecutively (starting with "1") in the order in which they appear in the original MEPS data.  PERNUM was created by IPUMS MEPS during the process of reformatting the original MEPS public use files.]]></txt>
+  <codInstr><![CDATA[CodesPERNUM is a 2-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="DUID" dcml="0" files="ExtractData" intrvl="contin" name="DUID">
+  <location EndPos="13" StartPos="7" width="7"/>
+  <labl>Dwelling unit ID</labl>
+  <txt><![CDATA[For all persons, DUID reports the identifier assigned by MEPS to the person's Dwelling Unit (DU), sampled for MEPS data collection. DUID is a random ID number assigned after the DU was sampled for MEPS and does not change once assigned. The MEPS sample is a subset of the households that participated in the National Health Interview Survey (NHIS). 
+
+DU definitions are generally consistent with NHIS definitions of households. For example, the 2018 NHIS Survey Description document describes households as "occupied housing units" (p. 10) that exclude "long-term care institutions (for example, nursing homes for the elderly, hospitals for the chronically ill or physically or intellectually disabled, and wards for abused or neglected children), correctional facilities (for example, prisons or jails, juvenile detention centers, and halfway houses)." (p. 8). Additionally, "unless one other family member is a civilian eligible for the survey (for example, a child whose parents are both active-duty military)" (p. 8), housing units occupied by active-duty Armed Forces personnel are also excluded from the survey. 
+
+From 1996-2017, DUID is unique within panel, but must be combined with PANEL to be unique across panels. Starting in 2018, DUID begins with the 2-digit variable PANEL, making DUID unique across panels. DUID can be combined with PID to uniquely identify each person within the Dwelling Unit. Please see the user note for more information on the relationship between Dwelling Units, families, Reporting Units, and persons.]]></txt>
+  <codInstr><![CDATA[DUID is a numeric variable ranging in width from 1 to 7 digits.]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="PID" dcml="0" files="ExtractData" intrvl="contin" name="PID">
+  <location EndPos="16" StartPos="14" width="3"/>
+  <labl>Person number</labl>
+  <txt><![CDATA[For all persons, PID is a within-Dwelling Unit (DU) person identifier assigned in sampling or by the computer-assisted personal interviewing (CAPI) instrument. PID must be combined with DUID and PANEL to uniquely identify persons across all MEPS data. IPUMS MEPS offers the constructed variable MEPSID, created by concatenating the values of DUID, PID, and PANEL. 
+
+Please see the user note for more information on the relationship between Dwelling Units, families, Reporting Units, and persons.]]></txt>
+  <codInstr><![CDATA[CodesPID is a 3-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="character"/>
+</var>
+<var ID="MEPSID" dcml="0" files="ExtractData" intrvl="contin" name="MEPSID">
+  <location EndPos="26" StartPos="17" width="10"/>
+  <labl>MEPS unique identifier (IPUMS generated)</labl>
+  <txt><![CDATA[For all persons, MEPSID is a variable that uniquely identifies respondents across MEPS panels. It is created by combining PANEL, DUID, and PID. IPUMS MEPS staff create MEPSID for the 1996-2017 samples to provide a single, universal linking key for MEPS persons. Beginning in 2018, AHRQ modified the identifiers DUID and DUPERSID (which combines DUID with PID) on the original MEPS data files to append information about PANEL to the first two columns. This update makes DUPERSID identical to MEPSID in the IPUMS MEPS extract system for 2018-forward.
+
+In earlier versions of IPUMS MEPS, IPUMS MEPS staff created a slightly different version of MEPSID, equivalent to combining DUID, PID, and PANEL. This version has been renamed to MEPSID2 and is only available for 1996-2017.]]></txt>
+  <codInstr><![CDATA[This is a 10-digit numeric variable with 0 implied decimal places]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="character"/>
+</var>
+<var ID="PANEL" dcml="0" files="ExtractData" intrvl="discrete" name="PANEL">
+  <location EndPos="28" StartPos="27" width="2"/>
+  <labl>Panel</labl>
+  <txt><![CDATA[For all persons, PANEL reports the number of the panel of which the person was a member. MEPS began in 1996 with Panel number 1 and the panel number for persons entering the MEPS in each subsequent year increases by 1, so that 1997 had Panels 1 (the panel that entered in 1996, in their second year in 1997) and 2 (the panel newly entering MEPS in 1997), 1998 had Panels 2 and 3, 1999 had Panels 3 and 4, and so on. PANEL can be combined with DUID and PID to uniquely identify individuals across panels. IPUMS MEPS offers the constructed variable MEPSID that is equal to the concatenated values of DUID, PID, and PANEL.
+
+For more information on the relationship between calendar year, panel, and round data, please see the IPUMS MEPS Panel Design Documentation.]]></txt>
+  <catgry>
+    <catValu>00</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>01</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>02</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>03</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>04</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>05</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>06</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>07</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>08</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>09</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>10</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>11</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>12</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>13</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>14</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>15</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>16</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>17</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>18</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>19</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>20</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>21</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>22</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>23</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>24</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>25</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>26</catValu>
+    <labl/>
+  </catgry>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="PSUANN" dcml="0" files="ExtractData" intrvl="contin" name="PSUANN">
+  <location EndPos="31" StartPos="29" width="3"/>
+  <labl>Annual primary sampling unit (PSU) for variance estimation</labl>
+  <txt><![CDATA[PSUANN is the annual primary sampling unit variable that represents the impact of sample design clustering on the estimates of variance and standard errors. It is appropriate to use PSUANN to generate annual estimates for all years. For pooled analyses including years before 2002 or after 2018, analysts should instead use the pooled primary sampling unit variable, PSUPLD. For analyses limited to years 2002-2018, PSUANN is suitable for use in annual and pooled analyses.
+
+PSUANN is constant within a sample design period and changes between sample design periods. For analysis, researchers need to use PSUANN in conjunction with STRATANN to account for stratification and clustering when computing variance estimates with IPUMS MEPS data.]]></txt>
+  <codInstr><![CDATA[CodesPSUANN is a 3-digit numeric variable.
+
+000:	Not in Universe]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="STRATANN" dcml="0" files="ExtractData" intrvl="contin" name="STRATANN">
+  <location EndPos="39" StartPos="32" width="8"/>
+  <labl>Annual stratum for variance estimation</labl>
+  <txt><![CDATA[STRATANN is an IPUMS MEPS-constructed variable based on the annual variance estimation strata variable in the public use files. STRATANN represents the impact of sample design stratification on estimates of variance and standard errors. IPUMS staff generate STRATANN by concatenating YEAR and the original AHRQ-provided variance estimation strata variable, VARSTR. It is appropriate to use STRATANN to generate annual estimates for all years. For pooled analyses including years before and after 2002 or before and after 2019, analysts should instead use the pooled variance sampling strata variable, STRATAPLD. For analyses limited to the years 2002-2018 or 2019-forward, STRATANN is suitable for use in annual and pooled analyses. 
+
+From 1996-2001, values of STRATANN were statistically independent from year to year. Between 2002-2018 and for 2019-forward, values of STRATANN are constant within sample design period. For analysis, researchers need to use STRATANN in conjunction with PSUANN to account for stratification and clustering when computing variance estimates with MEPS data using a Taylor-series Linearization approach. For more information, please see our user note on variance estimation using IPUMS MEPS data.]]></txt>
+  <codInstr><![CDATA[CodesSTRATANN is an 8-digit numeric variable, where the first four digits are the same as the YEAR value.]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="PSUPLD" dcml="0" files="ExtractData" intrvl="contin" name="PSUPLD">
+  <location EndPos="40" StartPos="40" width="1"/>
+  <labl>Pooled primary sampling unit (PSU) for variance estimation</labl>
+  <txt><![CDATA[PSUPLD is the pooled variance primary sampling unit variable that represents the impact of the sample design clustering on the estimates of variance and standard errors. It is appropriate to use PSUPLD instead of the annual primary sampling unit (PSUANN) if the years included in a pooled analysis include survey years 1996-2001 or 2019-forward. When pooling data from only 2002-2018, it is appropriate to use the variable PSUANN, the annual stratum variable for each survey year.
+
+For analysis, researchers need to use PSUPLD in conjunction with STRATAPLD to account for stratification and clustering when computing variance estimates with IPUMS MEPS data. 
+&nbsp;PSUPLD should be used when analysts wish to pool together (aka combine) more than one year of MEPS annual data including any years before 2002 or after 2018. In most years, MEPS samples are not completely independent from one another, both because each panel is in the MEPS for two consecutive years and because households are sampled from the same geographic areas in multiple years. However, because MEPS is designed to be nationally representative in every year, multiple sample years can still be pooled. The use of PSUPLD and STRAPLD is necessary to obtain appropriate standard errors by specifying a common variance structure.]]></txt>
+  <codInstr><![CDATA[CodesPSUPLD is a 1-digit numeric variable.
+
+0:	Not in Universe]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="STRATAPLD" dcml="0" files="ExtractData" intrvl="contin" name="STRATAPLD">
+  <location EndPos="44" StartPos="41" width="4"/>
+  <labl>Pooled variance stratum</labl>
+  <txt><![CDATA[STRATAPLD is the pooled variance sampling strata variable that represents the impact of the sample design stratification on the estimates of variance and standard errors. It is appropriate to use STRATAPLD instead of the annual strata variable (STRATANN) if the years included in a pooled analysis include survey years 1996-2001 or 2019-forward. For pooling data from only 2002-2018, it is appropriate to use the variable STRATANN. 
+
+For analysis, researchers need to use STRATAPLD in conjunction with PSUPLD to account for stratification and clustering when computing variance estimates with IPUMS MEPS data.
+&nbsp;STRATAPLD should be used when users wish to pool together (aka combine) more than one year of MEPS annual data including any years before 2002 or after 2018. In most years, MEPS samples are not completely independent from one another, both because each panel is in the MEPS for two consecutive years and because households are sampled from the same geographic areas in multiple years. However, because MEPS is designed to be nationally representative in every year, multiple sample years can still be pooled. The use of STRATAPLD and PSUPLD is necessary to obtain appropriate standard errors by specifying a common variance structure.]]></txt>
+  <codInstr><![CDATA[CodesSTRATAPLD is a 4-digit numeric variable.
+
+0000:	Not in Universe]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="PANELYR" dcml="0" files="ExtractData" intrvl="discrete" name="PANELYR">
+  <location EndPos="48" StartPos="45" width="4"/>
+  <labl>Year entered MEPS</labl>
+  <txt><![CDATA[For all persons, PANELYR reports the year that the person started to participate in the MEPS Household Component interviews. PANELYR is identical to YEAR if the person is in their first year of MEPS participation ("relative year 1," captured in RELYR), or the year previous to the one recorded in YEAR if the person is in relative year 2 of the MEPS PANEL.  For more information on the relationship between relative year, calendar year, panel, and round data, please see the IPUMS MEPS Panel Design Documentation.]]></txt>
+  <catgry>
+    <catValu>1996</catValu>
+    <labl>1996</labl>
+  </catgry>
+  <catgry>
+    <catValu>1997</catValu>
+    <labl>1997</labl>
+  </catgry>
+  <catgry>
+    <catValu>1998</catValu>
+    <labl>1998</labl>
+  </catgry>
+  <catgry>
+    <catValu>1999</catValu>
+    <labl>1999</labl>
+  </catgry>
+  <catgry>
+    <catValu>2000</catValu>
+    <labl>2000</labl>
+  </catgry>
+  <catgry>
+    <catValu>2001</catValu>
+    <labl>2001</labl>
+  </catgry>
+  <catgry>
+    <catValu>2002</catValu>
+    <labl>2002</labl>
+  </catgry>
+  <catgry>
+    <catValu>2003</catValu>
+    <labl>2003</labl>
+  </catgry>
+  <catgry>
+    <catValu>2004</catValu>
+    <labl>2004</labl>
+  </catgry>
+  <catgry>
+    <catValu>2005</catValu>
+    <labl>2005</labl>
+  </catgry>
+  <catgry>
+    <catValu>2006</catValu>
+    <labl>2006</labl>
+  </catgry>
+  <catgry>
+    <catValu>2007</catValu>
+    <labl>2007</labl>
+  </catgry>
+  <catgry>
+    <catValu>2008</catValu>
+    <labl>2008</labl>
+  </catgry>
+  <catgry>
+    <catValu>2009</catValu>
+    <labl>2009</labl>
+  </catgry>
+  <catgry>
+    <catValu>2010</catValu>
+    <labl>2010</labl>
+  </catgry>
+  <catgry>
+    <catValu>2011</catValu>
+    <labl>2011</labl>
+  </catgry>
+  <catgry>
+    <catValu>2012</catValu>
+    <labl>2012</labl>
+  </catgry>
+  <catgry>
+    <catValu>2013</catValu>
+    <labl>2013</labl>
+  </catgry>
+  <catgry>
+    <catValu>2014</catValu>
+    <labl>2014</labl>
+  </catgry>
+  <catgry>
+    <catValu>2015</catValu>
+    <labl>2015</labl>
+  </catgry>
+  <catgry>
+    <catValu>2016</catValu>
+    <labl>2016</labl>
+  </catgry>
+  <catgry>
+    <catValu>2017</catValu>
+    <labl>2017</labl>
+  </catgry>
+  <catgry>
+    <catValu>2018</catValu>
+    <labl>2018</labl>
+  </catgry>
+  <catgry>
+    <catValu>2019</catValu>
+    <labl>2019</labl>
+  </catgry>
+  <catgry>
+    <catValu>2020</catValu>
+    <labl>2020</labl>
+  </catgry>
+  <catgry>
+    <catValu>2021</catValu>
+    <labl>2021</labl>
+  </catgry>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="RELYR" dcml="0" files="ExtractData" intrvl="discrete" name="RELYR">
+  <location EndPos="49" StartPos="49" width="1"/>
+  <labl>Relative year 1 or 2 in panel</labl>
+  <txt><![CDATA[For all persons, RELYR indicates whether they are in their first or second year of participation in the MEPS household component panel. The MEPS panel involves five rounds of interviews over a period of about two years.  For more information on the relationship between relative year, calendar year, panel, and round data, please see the IPUMS MEPS Panel Design Documentation.
+
+NOTE: AHRQ's COVID-related introduction of additional interviews for households in Panels 23 and 24 necessitated adjustments to fit the expanded panel data into the traditional three-round-per-calendar-year MEPS data structure. This resulted in RELYR being expanded to 3 and/or 4 years in 2020 and 2021. For more information, please see the user note on MEPS 2020 changes.]]></txt>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Relative year 1</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Relative year 2</labl>
+  </catgry>
+  <catgry>
+    <catValu>3</catValu>
+    <labl>Relative year 3</labl>
+  </catgry>
+  <catgry>
+    <catValu>4</catValu>
+    <labl>Relative year 4</labl>
+  </catgry>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="PERWEIGHT" dcml="6" files="ExtractData" intrvl="contin" name="PERWEIGHT">
+  <location EndPos="61" StartPos="50" width="12"/>
+  <labl>Final basic annual weight</labl>
+  <txt><![CDATA[PERWEIGHT is an IPUMS MEPS-constructed variable based on the Final Person Weight in the original MEPS annual full-year consolidated files.  This weight should be used for many cross-sectional analyses at the person level, particularly with variables for which information was collected about all family members. PERWEIGHT represents the inverse probability of selection into the sample, adjusted for non-response with post-stratification adjustments for age, race/ethnicity, and sex using the Census Bureau's population control totals. For each year, the sum of these weights is equal to that year's civilian, non-institutionalized U.S. population. 
+
+There are instances, however, when the researcher should use a different person-level weight, particularly when analyzing variables from the Self-Administered Questionnaire or the Diabetes Care Survey, or when conducting longitudinal analyses with the MEPS data. For example, researchers analyzing variables from the Self-Administered Questionnaire from 2000 forward should use SAQWEIGHT rather than PERWEIGHT. 
+
+Users should review the documentation for extracted variables--most notably the "Weights" section toward the top of each variable description--to ascertain which weight is the appropriate choice for a given survey year.]]></txt>
+  <codInstr><![CDATA[CodesPERWEIGHT is a 12-digit numeric variable with 6 implied decimals.]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="SAQWEIGHT" dcml="6" files="ExtractData" intrvl="contin" name="SAQWEIGHT">
+  <location EndPos="73" StartPos="62" width="12"/>
+  <labl>Self-Administered Questionnaire weight</labl>
+  <txt><![CDATA[SAQWEIGHT is an IPUMS MEPS-constructed variable based on the Final SAQ Weight in the original MEPS annual full-year consolidated files. This weight should be used for many cross-sectional analyses at the person level, particularly with variables for which information was collected about persons selected for the Self-Administered Questionnaire (SAQ) (see SAQELIG for the person's SAQ eligibility status). For each year, the sum of these weights is equal to that year's civilian, non-institutionalized U.S. population aged 18 and older. SAQWEIGHT adjusts for SAQ non-response.
+
+In 2000, SAQWEIGHT also includes weighting information for children under the age of 18 whose parent or guardian completed the Parent Administered Questionnaire (PAQ). For 2000 only, the sum of SAQWEIGHT is equal to the full civilian, non-institutionalized U.S. population. SAQWEIGHT does differ from PERWEIGHT in 2000 because the poststratification age group of 15-19 was partitioned into two groups, 15-17 and 18-19, for SAQWEIGHT to account for the target populations of the SAQ and PAQ.
+
+Users should review the documentation for extracted variables, most notably the "Weights" section toward the top of each variable description, to ascertain which weight is the appropriate choice for a given survey year.
+
+See the User Notes on the use of sampling weights for additional information.]]></txt>
+  <codInstr><![CDATA[CodesSAQWEIGHT is a 12-digit numeric variable with 6 implied decimal places. That is, values of 012345678912 should be interpreted as 12345.678912. The command files delivered with IPUMS extracts automatically divide SAQWEIGHT by 1,000,000, so no further adjustment is needed.]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="DIABWEIGHT" dcml="6" files="ExtractData" intrvl="contin" name="DIABWEIGHT">
+  <location EndPos="85" StartPos="74" width="12"/>
+  <labl>Diabetes care weight</labl>
+  <txt><![CDATA[For all persons, DIABWEIGHT is an IPUMS MEPS-constructed variable based on the Final Diabetes Care Supplement Weight in the original MEPS annual full-year consolidated files.  This weight should be used for many cross-sectional analyses at the person level, particularly with variables for which information was collected about persons selected for the self-administered Diabetes Care Survey (DCS) (individuals who reported that they had ever been told by a health care professional that they had diabetes). DIABWEIGHT adjusts for DCS non-response. For each year, the sum of these weights is equal to that year's estimated U.S. population of civilian, non-institutionalized diabetics aged 18 and older. Only persons who answer "yes" to DCSDIABDX have a positive value for DIABWEIGHT. For more information about the DCS, please see the Diabetes Care Survey user note.
+
+Users should review the documentation for extracted variables--most notably the "Weights" section toward the top of each variable description--to ascertain which weight is the appropriate choice for a given survey year.]]></txt>
+  <codInstr><![CDATA[CodesDIABWEIGHT is a 12-digit numeric variable with 6 implied decimal places. That is, a value of 012345678912 should be interpreted as 12345.678912. The command files delivered with IPUMS extracts automatically divide DIABWEIGHT by 1,000,000, so no further adjustment is needed.]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="FAMIDYR" dcml="0" files="ExtractData" intrvl="contin" name="FAMIDYR">
+  <location EndPos="86" StartPos="86" width="1"/>
+  <labl>Annual family identifier (MEPS family definition)</labl>
+  <txt><![CDATA[For all persons, FAMIDYR uniquely identifies MEPS families within the current calendar year when combined with DUID. FAMIDYR must be combined with both DUID and PANEL to uniquely identify a family across panels. MEPS defines families as a single person or a group of two or more people who live together and who are related by birth, marriage, adoption, or who otherwise identify themselves as a family unit. The MEPS family definition includes unmarried partners and in-laws. Until 2017, MEPS families included fostered children, but fostered children are not included in MEPS data beginning in 2017.
+
+MEPS assigns the same value of FAMIDYR to all family members, including those who are unmarried college students under the age of 24 and living away from home (identified as student Reporting Units with a value of 3 on RUCLAS). 
+
+Related Variables
+FAMIDRD: Round-specific family identifier, including students
+
+CPSFAMID: Annual CPS-defined family identifier
+]]></txt>
+  <codInstr><![CDATA[This is a 1-digit numeric variable with 0 implied decimal places]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="character"/>
+</var>
+<var ID="CPSFAMID" dcml="0" files="ExtractData" intrvl="contin" name="CPSFAMID">
+  <location EndPos="87" StartPos="87" width="1"/>
+  <labl>Annual family identifier (CPS family definition)</labl>
+  <txt><![CDATA[CPSFAMID is a constructed variable that uniquely identifies the CPS family. CPS families are defined as a group of two or more people related by birth, marriage, or adoption and residing together. This does not include unmarried partners or foster children.]]></txt>
+  <codInstr><![CDATA[This is a 1-digit numeric variable with 0 implied decimal places]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="character"/>
+</var>
+<var ID="CPSFAMSIZE" dcml="0" files="ExtractData" intrvl="discrete" name="CPSFAMSIZE">
+  <location EndPos="89" StartPos="88" width="2"/>
+  <labl>Size of CPS-defined family responding on December 31</labl>
+  <txt><![CDATA[CPSFAMSIZE is a constructed variable that specifies the size of the CPS family as of 12/31 of the survey year. CPS families are defined as a group of two or more people related by birth, marriage, or adoption and residing together. This does not include unmarried partners or foster children.]]></txt>
+  <catgry>
+    <catValu>00</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>01</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>02</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>03</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>04</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>05</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>06</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>07</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>08</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>09</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>10</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>11</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>12</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>13</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>14</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>15</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>16</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>17</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>18</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>19</catValu>
+    <labl/>
+  </catgry>
+  <catgry>
+    <catValu>20</catValu>
+    <labl/>
+  </catgry>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="CPSFAMREFP" dcml="0" files="ExtractData" intrvl="discrete" name="CPSFAMREFP">
+  <location EndPos="90" StartPos="90" width="1"/>
+  <labl>Reference person of CPS-defined family as of December 31</labl>
+  <txt><![CDATA[CPSFAMREFP is a constructed variable that identifies the reference person from the CPS family. CPS families are defined as a group of two or more people related by birth, marriage, or adoption and residing together. This does not include unmarried partners or foster children. In general, the reference person is defined as a member of the CPS family who is 16 years of age or older who is the homeowner, or is identified as the person who owns or rents the home, or as the head of household.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Not a reference person</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Reference person</labl>
+  </catgry>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="FAMSZE" dcml="0" files="ExtractData" intrvl="contin" name="FAMSZE">
+  <location EndPos="92" StartPos="91" width="2"/>
+  <labl>Reporting Unit size including unmarried college student as of December 31</labl>
+  <txt><![CDATA[FAMSZE reports the number of persons associated with a single family unit after students are linked to their associated parent reporting units for analytical purposes. Family-level analyses should use the FAMSZE variable.]]></txt>
+  <codInstr><![CDATA[FAMSZE is a two digit numeric variable with the following special codes:
+
+		
+Codes0: Not in universe]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="FAMINSCOPE" dcml="0" files="ExtractData" intrvl="discrete" name="FAMINSCOPE">
+  <location EndPos="93" StartPos="93" width="1"/>
+  <labl>Member of responding family as of December 31</labl>
+  <txt><![CDATA[FAMINSCOPE reports if the respondent was inscope for the survey on 12/31 of the survey year, and therefore part of a MEPS family on 12/31 of the survey year. A person is considered inscope if he or she a member of a MEPS household, and is a member of the U.S. civilian, noninstitutionalized population.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Non-responding family</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Responding family</labl>
+  </catgry>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="FAMREFPYR" dcml="0" files="ExtractData" intrvl="discrete" name="FAMREFPYR">
+  <location EndPos="94" StartPos="94" width="1"/>
+  <labl>Reference person of annualized family</labl>
+  <txt><![CDATA[FAMREFPYR indicates if the person is the reference person of the MEPS annualized family. In general, the reference person is defined as the household member, age 16 of years or older, who owns or rents the home. If more than one person own or rents the home, the reference person is chosen from amongst them. If the respondent is unable to identify the home renter/owner, they are asked who is the head of the household, and that person is considered the reference person for the responding unit. Each MEPS family has only one reference person, and this variable is used to create a family-level file.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Not a reference person</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Reference person</labl>
+  </catgry>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="REFPRS" dcml="0" files="ExtractData" intrvl="contin" name="REFPRS">
+  <location EndPos="97" StartPos="95" width="3"/>
+  <labl>Reference person as of December 31</labl>
+  <txt><![CDATA[REFPRS indicates the reference person for the responding unit. In general, the reference person is defined as the household member, age 16 of years or older, who owns or rents the home. If more than one person own or rents the home, the reference person is chosen from amongst them. If the respondent is unable to identify the home renter/owner, they are asked who is the head of the household, and that person is considered the reference person for the responding unit. For student responding units, the student is considered the reference person.]]></txt>
+  <codInstr><![CDATA[This is a 3-digit numeric variable with 0 implied decimal places]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="ELIG1231" dcml="0" files="ExtractData" intrvl="discrete" name="ELIG1231">
+  <location EndPos="98" StartPos="98" width="1"/>
+  <labl>Eligibility status as of December 31</labl>
+  <txt><![CDATA[ELIG1231 indicates a person's eligibility status as of 12/31 of the survey year. All key, inscope persons of a sampled responding unit are eligible for data colleciton. The only non-key persons eligible for data collection are those who are living in a responding unit with at least one key, inscope person. At the point where this person is no longer living with a key, inscope person, they are no longer considered eligible. The only out-of-scope persons who are considered eligible are those who are living with a key, inscope person, and, again, only for the period that they are living with this person. Only members of the  military can meet this description. For keyness, see the variable KEYNESS and for inscope status as of 12/31 of the survey year, see the variable INSCOP1231.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Person is not eligible</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Person is in non-responding RU</labl>
+  </catgry>
+  <catgry>
+    <catValu>3</catValu>
+    <labl>Person is not in an RU</labl>
+  </catgry>
+  <catgry>
+    <catValu>4</catValu>
+    <labl>Person is eligible</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown - Refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown - Not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown - Don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="HIEU" dcml="0" files="ExtractData" intrvl="contin" name="HIEU">
+  <location EndPos="107" StartPos="99" width="9"/>
+  <labl>Health insurance eligibility unit identifier</labl>
+  <txt><![CDATA[For all persons, HIEU reports the person’s MEPS-constructed Health Insurance Eligibility Unit (HIEU) identifier. HIEUs are sub-family relationship units constructed by MEPS to include adults plus any family members who would typically be eligible for coverage under the adults' private health insurance family plans. This variable uses the CPS family identification variable, CPSFAMID, to identify family units as of the end of the calendar year. HIEUs are comprised of adults, their spouses, and their unmarried natural/adoptive children age 18 and under (age 24 and under if the children are full-time students). 
+
+HIEUs for Unmarried Children Not Living with Biological/Adoptive Parents&nbsp;Children who do not live with their biological/adoptive parents are placed in different HIEUs, as follows: 
+
+Foster children always comprise a separate HIEU.
+
+Unmarried children are placed in a stepparent HIEU, grandparent HIEU, great-grandparent HIEU, or aunt/uncle HIEU.
+
+Children of unmarried minors are placed (along with their minor parents) in the HIEUIDX of their adult grandparents (if possible).
+
+Married minors are placed into separate HIEUs along with any spouses and children they might have.
+
+If there is no adult family member present in the CPSFAMID, an HIEU will be headed by an unmarried minor (such as in foster children HIEUs).
+]]></txt>
+  <codInstr><![CDATA[Due to the increased width of DUID, HIEU expands from a 7-character to a 9-character string variable in 2018.]]></codInstr>
+  <concept vocab="IPUMS">Technical Variables -- PERSON</concept>
+  <varFormat schema="other" type="character"/>
+</var>
+<var ID="AGE" dcml="0" files="ExtractData" intrvl="contin" name="AGE">
+  <location EndPos="110" StartPos="108" width="3"/>
+  <labl>Age</labl>
+  <txt><![CDATA[AGE reports the individual's exact age, calculated from date of birth, as of the last day (12/31) of the survey year. 
+&nbsp;Date of birth and age were asked for each reporting unit member, and then exact age was calculated from date of birth. Where the calculated age and the age provided did not match, inconsistencies were reviewed and resolved. When date of birth was not provided, but age was provided, the month and year of birth were assigned randomly from among the possible valid options. For any cases still not accounted, age was imputed using:
+(1) the mean age difference between MEPS participants with certain family relationships (where available) or  
+(2) the mean age value for MEPS participants.]]></txt>
+  <codInstr><![CDATA[CodesAGE is a 3-digit-numeric variable.
+
+085:	Top code for 85 years or older (2001-forward)
+090:	Top code for 90 years or older (1996-2000)
+996:	Missing]]></codInstr>
+  <concept vocab="IPUMS">Core Demographic Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="SEX" dcml="0" files="ExtractData" intrvl="discrete" name="SEX">
+  <location EndPos="111" StartPos="111" width="1"/>
+  <labl>Sex</labl>
+  <txt><![CDATA[SEX indicates whether the person was male or female.  
+
+Collection of information on SEX in MEPS&nbsp;Data on the sex of each reporting unit (RU) member was determined during the NHIS interview, and was then verified, and, if necessary, corrected during each MEPS interview.
+
+If the respondent was a new RU member or their sex was not ascertained in the NHIS interview, MEPS initially used the first name of the respondent to assign their sex. If the first name gave no clear indication of sex, the reported family relationships were used to assign sex. If the sex of the respondent was still unclear, sex was randomly assigned. 
+
+The NHIS method of ascertaining the sex of the respondent, which primarily informs the MEPS version of SEX, is similar to the MEPS method. First, sex of the respondent was inferred from the individual's first name or family relationships. If the sex of the respondent was unclear, the interviewer was instructed to explicitly ask the person's sex. Beginning in 1998, interviewers were told to "enter your best guess" when the respondent either did not know or refused to answer the direct question that was asked about the person's sex.]]></txt>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Male</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Female</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Core Demographic Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="MARSTAT" dcml="0" files="ExtractData" intrvl="discrete" name="MARSTAT">
+  <location EndPos="113" StartPos="112" width="2"/>
+  <labl>Legal marital status</labl>
+  <txt><![CDATA[For persons age 16 and older, MARSTAT reports the person's legal marital status.]]></txt>
+  <catgry>
+    <catValu>00</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>10</catValu>
+    <labl>Married</labl>
+  </catgry>
+  <catgry>
+    <catValu>20</catValu>
+    <labl>Widowed</labl>
+  </catgry>
+  <catgry>
+    <catValu>30</catValu>
+    <labl>Divorced</labl>
+  </catgry>
+  <catgry>
+    <catValu>40</catValu>
+    <labl>Separated</labl>
+  </catgry>
+  <catgry>
+    <catValu>50</catValu>
+    <labl>Never married</labl>
+  </catgry>
+  <catgry>
+    <catValu>99</catValu>
+    <labl>Unknown marital status</labl>
+  </catgry>
+  <concept vocab="IPUMS">Core Demographic Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="RELATE" dcml="0" files="ExtractData" intrvl="discrete" name="RELATE">
+  <location EndPos="115" StartPos="114" width="2"/>
+  <labl>Relationship to householder</labl>
+  <txt><![CDATA[RELATE reports an individual's relationship to the reference person.
+&nbsp;For each reporting unit, the person who owns or rents the dwelling unit is usually defined as the reference person. For student reporting units, the student is defined as the reporting unit. For the reference person, the value of RELATE is "Self." For all others, the relationship is indicated by codes, such as "husband/spouse," "wife/spouse," "son," etc. 
+
+If the relationship of an individual to the reference person was not ascertained during the Round specific interview, relationships between other RU members were used, where possible, to assign a relationship to the reference person. If two individuals' relationship indicated that they were spouses, but both had a marital status of "single," they were assigned a relationship of non-marital partners.]]></txt>
+  <catgry>
+    <catValu>10</catValu>
+    <labl>Householder</labl>
+  </catgry>
+  <catgry>
+    <catValu>20</catValu>
+    <labl>Spouse</labl>
+  </catgry>
+  <catgry>
+    <catValu>21</catValu>
+    <labl>Spouse, other spouse at home and NOT in Armed forces</labl>
+  </catgry>
+  <catgry>
+    <catValu>22</catValu>
+    <labl>Spouse, other spouse at home and in Armed Forces</labl>
+  </catgry>
+  <catgry>
+    <catValu>30</catValu>
+    <labl>Unmarried partner</labl>
+  </catgry>
+  <catgry>
+    <catValu>40</catValu>
+    <labl>Child</labl>
+  </catgry>
+  <catgry>
+    <catValu>41</catValu>
+    <labl>Child (bio/adopt/in-law/step/foster) of householder</labl>
+  </catgry>
+  <catgry>
+    <catValu>43</catValu>
+    <labl>Child of partner</labl>
+  </catgry>
+  <catgry>
+    <catValu>44</catValu>
+    <labl>Child of ineligible householder</labl>
+  </catgry>
+  <catgry>
+    <catValu>50</catValu>
+    <labl>Other relative 1  (not wife, child)</labl>
+  </catgry>
+  <catgry>
+    <catValu>60</catValu>
+    <labl>Grandchild</labl>
+  </catgry>
+  <catgry>
+    <catValu>70</catValu>
+    <labl>Other relative 2 (not grandkid, child, spouse, parent)</labl>
+  </catgry>
+  <catgry>
+    <catValu>71</catValu>
+    <labl>Parent (bio/adopt/in-law/step/foster) of householder</labl>
+  </catgry>
+  <catgry>
+    <catValu>72</catValu>
+    <labl>Brother/sister (bio/adopt/in-law/step/foster)</labl>
+  </catgry>
+  <catgry>
+    <catValu>73</catValu>
+    <labl>Grandparent (Grandma/Grandpa)</labl>
+  </catgry>
+  <catgry>
+    <catValu>74</catValu>
+    <labl>Aunt/uncle</labl>
+  </catgry>
+  <catgry>
+    <catValu>75</catValu>
+    <labl>Niece/nephew</labl>
+  </catgry>
+  <catgry>
+    <catValu>76</catValu>
+    <labl>Other relative 3 (no named category)</labl>
+  </catgry>
+  <catgry>
+    <catValu>80</catValu>
+    <labl>Nonrelative</labl>
+  </catgry>
+  <catgry>
+    <catValu>81</catValu>
+    <labl>Housemate/roommate</labl>
+  </catgry>
+  <catgry>
+    <catValu>82</catValu>
+    <labl>Roomer/boarder</labl>
+  </catgry>
+  <catgry>
+    <catValu>83</catValu>
+    <labl>Legal guardian</labl>
+  </catgry>
+  <catgry>
+    <catValu>84</catValu>
+    <labl>Ward</labl>
+  </catgry>
+  <catgry>
+    <catValu>85</catValu>
+    <labl>Other nonrelative</labl>
+  </catgry>
+  <catgry>
+    <catValu>90</catValu>
+    <labl>Unknown</labl>
+  </catgry>
+  <catgry>
+    <catValu>96</catValu>
+    <labl>Unknown - Don't know or refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>97</catValu>
+    <labl>Unknown-Refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>98</catValu>
+    <labl>Unknown - Not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>99</catValu>
+    <labl>Unknown-Don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Family Interrelationships Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="FAMSIZE" dcml="0" files="ExtractData" intrvl="contin" name="FAMSIZE">
+  <location EndPos="117" StartPos="116" width="2"/>
+  <labl>Number of persons in family</labl>
+  <txt><![CDATA[FAMSIZE reports the number of persons in a family. FAMSIZE is generated by the Agency for Healthcare Research and Quality, rather than based on a direct question to survey respondents. 
+&nbsp;A MEPS family may include foster children, as well as unmarried persons living together who consider themselves a family unit (these are not included in the CPS family definition). Single persons who do not live with a relative nor a person identified as a "significant other" are assigned a family size of one.]]></txt>
+  <codInstr><![CDATA[CodesFAMSIZE is a 2-digit numeric variable
+
+99: NIU]]></codInstr>
+  <concept vocab="IPUMS">Family Interrelationships Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="RACEA" dcml="0" files="ExtractData" intrvl="discrete" name="RACEA">
+  <location EndPos="120" StartPos="118" width="3"/>
+  <labl>Main Racial Background (Pre-1997 Revised OMB Standards), self-reported or interviewer reported</labl>
+  <txt><![CDATA[RACEA reports the race of the respondent. If not ascertained, the race and/or ethnicity were assigned based on relationship to other members of the DU using a priority ordering that gave precedence to blood relatives in the immediate family.]]></txt>
+  <catgry>
+    <catValu>100</catValu>
+    <labl>White</labl>
+  </catgry>
+  <catgry>
+    <catValu>200</catValu>
+    <labl>Black/African-American</labl>
+  </catgry>
+  <catgry>
+    <catValu>300</catValu>
+    <labl>Aleut, Alaskan Native, or American Indian</labl>
+  </catgry>
+  <catgry>
+    <catValu>310</catValu>
+    <labl>Alaskan Native or American Indian</labl>
+  </catgry>
+  <catgry>
+    <catValu>320</catValu>
+    <labl>Alaskan Native/Eskimo</labl>
+  </catgry>
+  <catgry>
+    <catValu>330</catValu>
+    <labl>Aleut</labl>
+  </catgry>
+  <catgry>
+    <catValu>340</catValu>
+    <labl>American Indian</labl>
+  </catgry>
+  <catgry>
+    <catValu>350</catValu>
+    <labl>American Indian or Alaskan Native and any other group</labl>
+  </catgry>
+  <catgry>
+    <catValu>400</catValu>
+    <labl>Asian or Pacific Islander</labl>
+  </catgry>
+  <catgry>
+    <catValu>410</catValu>
+    <labl>Asian</labl>
+  </catgry>
+  <catgry>
+    <catValu>411</catValu>
+    <labl>Chinese</labl>
+  </catgry>
+  <catgry>
+    <catValu>412</catValu>
+    <labl>Filipino</labl>
+  </catgry>
+  <catgry>
+    <catValu>413</catValu>
+    <labl>Korean</labl>
+  </catgry>
+  <catgry>
+    <catValu>414</catValu>
+    <labl>Vietnamese</labl>
+  </catgry>
+  <catgry>
+    <catValu>415</catValu>
+    <labl>Japanese</labl>
+  </catgry>
+  <catgry>
+    <catValu>416</catValu>
+    <labl>Asian Indian</labl>
+  </catgry>
+  <catgry>
+    <catValu>420</catValu>
+    <labl>Pacific Islander</labl>
+  </catgry>
+  <catgry>
+    <catValu>421</catValu>
+    <labl>Hawaiian</labl>
+  </catgry>
+  <catgry>
+    <catValu>422</catValu>
+    <labl>Samoan</labl>
+  </catgry>
+  <catgry>
+    <catValu>423</catValu>
+    <labl>Guamanian</labl>
+  </catgry>
+  <catgry>
+    <catValu>430</catValu>
+    <labl>Other Asian or Pacific Islander</labl>
+  </catgry>
+  <catgry>
+    <catValu>431</catValu>
+    <labl>Other Asian or Pacific Islander (1992-1995)</labl>
+  </catgry>
+  <catgry>
+    <catValu>432</catValu>
+    <labl>Other Asian or Pacific Islander (1996)</labl>
+  </catgry>
+  <catgry>
+    <catValu>433</catValu>
+    <labl>Other Asian or Pacific Islander (1997-1998)</labl>
+  </catgry>
+  <catgry>
+    <catValu>434</catValu>
+    <labl>Other Asian (1999 forward)</labl>
+  </catgry>
+  <catgry>
+    <catValu>500</catValu>
+    <labl>Other Race</labl>
+  </catgry>
+  <catgry>
+    <catValu>510</catValu>
+    <labl>Other Race (1963-1977)</labl>
+  </catgry>
+  <catgry>
+    <catValu>520</catValu>
+    <labl>Other Race (1978)</labl>
+  </catgry>
+  <catgry>
+    <catValu>530</catValu>
+    <labl>Other Race (1979-1991)</labl>
+  </catgry>
+  <catgry>
+    <catValu>540</catValu>
+    <labl>Other Race (1992-1995)</labl>
+  </catgry>
+  <catgry>
+    <catValu>550</catValu>
+    <labl>Other Race (1996)</labl>
+  </catgry>
+  <catgry>
+    <catValu>560</catValu>
+    <labl>Other Race (1997-1998)</labl>
+  </catgry>
+  <catgry>
+    <catValu>570</catValu>
+    <labl>Other Race (1999-2002)</labl>
+  </catgry>
+  <catgry>
+    <catValu>580</catValu>
+    <labl>Primary Race not releasable</labl>
+  </catgry>
+  <catgry>
+    <catValu>600</catValu>
+    <labl>Multiple Race, No Primary Race Selected</labl>
+  </catgry>
+  <catgry>
+    <catValu>610</catValu>
+    <labl>Multiple Race, including Asian, excluding Black and White</labl>
+  </catgry>
+  <catgry>
+    <catValu>611</catValu>
+    <labl>Multiple Race, including Asian and Black, excluding White</labl>
+  </catgry>
+  <catgry>
+    <catValu>612</catValu>
+    <labl>Multiple Race, including Asian and White, excluding Black</labl>
+  </catgry>
+  <catgry>
+    <catValu>613</catValu>
+    <labl>Multiple Race, including Black, excluding Asian and White</labl>
+  </catgry>
+  <catgry>
+    <catValu>614</catValu>
+    <labl>Multiple Race, including Black and White, excluding Asian</labl>
+  </catgry>
+  <catgry>
+    <catValu>615</catValu>
+    <labl>Multiple Race, including White, excluding Asian and Black</labl>
+  </catgry>
+  <catgry>
+    <catValu>616</catValu>
+    <labl>Multiple Race, including Asian, White, and Black</labl>
+  </catgry>
+  <catgry>
+    <catValu>617</catValu>
+    <labl>Multiple Race, excluding Asian, White, and Black</labl>
+  </catgry>
+  <catgry>
+    <catValu>900</catValu>
+    <labl>Unknown</labl>
+  </catgry>
+  <catgry>
+    <catValu>970</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>980</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>990</catValu>
+    <labl>Unknown (1997 forward: Don't know)</labl>
+  </catgry>
+  <concept vocab="IPUMS">Ethnicity/Nativity Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="HISPETH" dcml="0" files="ExtractData" intrvl="discrete" name="HISPETH">
+  <location EndPos="122" StartPos="121" width="2"/>
+  <labl>Hispanic ethnicity</labl>
+  <txt><![CDATA[HISPETH identifies and classifies persons of Hispanic/Latino origin or ancestry. They were asked to choose which group represents their main national origin or ancestry, and then given a list of possible Hispanic groups.]]></txt>
+  <catgry>
+    <catValu>10</catValu>
+    <labl>Not Hispanic/Spanish origin</labl>
+  </catgry>
+  <catgry>
+    <catValu>20</catValu>
+    <labl>Mexican</labl>
+  </catgry>
+  <catgry>
+    <catValu>21</catValu>
+    <labl>Mexican-Mexicano</labl>
+  </catgry>
+  <catgry>
+    <catValu>22</catValu>
+    <labl>Mexicano</labl>
+  </catgry>
+  <catgry>
+    <catValu>23</catValu>
+    <labl>Mexican-American</labl>
+  </catgry>
+  <catgry>
+    <catValu>24</catValu>
+    <labl>Chicano</labl>
+  </catgry>
+  <catgry>
+    <catValu>30</catValu>
+    <labl>Puerto Rican</labl>
+  </catgry>
+  <catgry>
+    <catValu>40</catValu>
+    <labl>Cuban/Cuban American</labl>
+  </catgry>
+  <catgry>
+    <catValu>50</catValu>
+    <labl>Dominican (Republic)</labl>
+  </catgry>
+  <catgry>
+    <catValu>60</catValu>
+    <labl>Other Hispanic</labl>
+  </catgry>
+  <catgry>
+    <catValu>61</catValu>
+    <labl>Central or South American</labl>
+  </catgry>
+  <catgry>
+    <catValu>62</catValu>
+    <labl>Other Latin American, type not specified</labl>
+  </catgry>
+  <catgry>
+    <catValu>63</catValu>
+    <labl>Other Spanish</labl>
+  </catgry>
+  <catgry>
+    <catValu>64</catValu>
+    <labl>Hispanic/Latino/Spanish, non-specific type</labl>
+  </catgry>
+  <catgry>
+    <catValu>65</catValu>
+    <labl>Hispanic/Latino/Spanish, type refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>66</catValu>
+    <labl>Hispanic/Latino/Spanish, type not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>67</catValu>
+    <labl>Hispanic/Spanish, type don't know</labl>
+  </catgry>
+  <catgry>
+    <catValu>70</catValu>
+    <labl>Multiple Hispanic</labl>
+  </catgry>
+  <catgry>
+    <catValu>90</catValu>
+    <labl>Unknown</labl>
+  </catgry>
+  <catgry>
+    <catValu>91</catValu>
+    <labl>Unknown if Hispanic/Spanish origin</labl>
+  </catgry>
+  <catgry>
+    <catValu>92</catValu>
+    <labl>Two origins, unknown which is the main</labl>
+  </catgry>
+  <catgry>
+    <catValu>93</catValu>
+    <labl>Origin unknown, refused or not reported</labl>
+  </catgry>
+  <catgry>
+    <catValu>99</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <concept vocab="IPUMS">Ethnicity/Nativity Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="USBORN" dcml="0" files="ExtractData" intrvl="discrete" name="USBORN">
+  <location EndPos="124" StartPos="123" width="2"/>
+  <labl>Born in the United States</labl>
+  <txt><![CDATA[For all persons who are not deceased or institutionalized, USBORN indicates whether the respondent was born in the United States (i.e., in one of the 50 states or in the District of Columbia). 
+
+IPUMS MEPS reports the universe for each variable based on a thorough review of the original MEPS documentation. Investigating the data may reveal cases that do not meet the stated universe. Users are encouraged to validate universes for their analyses.
+
+In 2002, 2003, and 2007-2013, USBORN was asked of all persons eligible for the Access to Care section (ACCESSELIG) who were not deceased or institutionalized. The Access to Care section gathers information on usual source of care for all family members, characteristics of usual source of care health providers, and barriers family members have faced in obtaining needed healthcare. From 2002-2013, the Access to Care section also collected information about language and nativity status. Beginning in 2013, USBORN was moved to the Demographic section. Persons in Panel 17 were not asked USBORN in 2013. Instead, their 2012 response to the question from the Access to Care section was simply copied to the 2013 file and persons in Panel 18 were asked USBORN in the Demographic section.]]></txt>
+  <catgry>
+    <catValu>10</catValu>
+    <labl>No</labl>
+  </catgry>
+  <catgry>
+    <catValu>11</catValu>
+    <labl>No, born in U.S. territory</labl>
+  </catgry>
+  <catgry>
+    <catValu>12</catValu>
+    <labl>No, born outside U.S. and U.S. territories</labl>
+  </catgry>
+  <catgry>
+    <catValu>20</catValu>
+    <labl>Yes, born in U.S.</labl>
+  </catgry>
+  <catgry>
+    <catValu>96</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>97</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>98</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>99</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Ethnicity/Nativity Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="FTOTVAL" dcml="0" files="ExtractData" intrvl="contin" name="FTOTVAL">
+  <location EndPos="131" StartPos="125" width="7"/>
+  <labl>Total family income</labl>
+  <txt><![CDATA[FTOTVAL reports the total income for each person's CPS family.
+
+Beginning in 2007, FAMINC was constructed from the person-level total income variable (INCTOT).
+
+CPS families are defined as a group of two or more people related by birth, marriage, adoption and residing together. Unlike the MEPS defined family, CPS family does not include unmarried partners or foster children.
+
+FTOTVAL was derived by constructing person-level total income comprising annual earnings from wages, salaries, bonuses, tips, commissions; business and farm games and losses; unemployment and workers' compensation; interest and dividends; alimony, child support, and other private cash transfers; private pensions, IRA withdrawals, social security, and veterans payments; supplemental security income and cash welfare payments from public assistance, Temporary Assistance for Needy Families, and related programs; gains or losses from estates, trusts, partnerships, S corporations, rent, and royalties; and a small amount of "other" income. Person-level income excluded tax refunds and capital gains. Person-level income totals were then summed over family members, as defined by CPSFAMID, to yield CPS family-level total income.
+
+Two additional family income variables were created by IPUMS MEPS. FTOTINCCPS is IPUMS MEPS constructed, and offers total family income for CPS families (excludes foster children and unmarried partners). FTOTINCMEPS is IPUMS MEPS constructed, and offers total family income for MEPS families (includes foster children and unmarried partners). Both FTOTINCCPS and FTOTINCMEPS are constructed from the public (edited and top-coded) versions of total individual income)]]></txt>
+  <codInstr><![CDATA[CodesFTOTVAL is a 6-digit numeric variable with no implied decimals.
+
+999999:	Not in Universe]]></codInstr>
+  <concept vocab="IPUMS">Total Income and Earnings Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="HEALTH" dcml="0" files="ExtractData" intrvl="discrete" name="HEALTH">
+  <location EndPos="132" StartPos="132" width="1"/>
+  <labl>Health status</labl>
+  <txt><![CDATA[HEALTH rates an individual's general health (as self-reported by the person in question) on a five-point Likert scale, ranging from "excellent" to "poor."
+
+HEALTH is one of a set of variables comprising the Veteran's RAND 12-item scale measuring self-rated health, collected on the Adult Self-Administered Questionnaire (SAQ). For related variables and more information, please see ADDAYA.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Excellent</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Very Good</labl>
+  </catgry>
+  <catgry>
+    <catValu>3</catValu>
+    <labl>Good</labl>
+  </catgry>
+  <catgry>
+    <catValu>4</catValu>
+    <labl>Fair</labl>
+  </catgry>
+  <catgry>
+    <catValu>5</catValu>
+    <labl>Poor</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Health Status Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="DELAYCOST" dcml="0" files="ExtractData" intrvl="discrete" name="DELAYCOST">
+  <location EndPos="133" StartPos="133" width="1"/>
+  <labl>Medical care delayed due to cost, past 12 months</labl>
+  <txt><![CDATA[For all persons eligible for the Access to Care section (ACCESSELIG), DELAYCOST indicates whether, in the past 12 months, the respondent has delayed medical care because of worry about the cost. 
+
+DELAYCOST is collected as part of the Access to Care section, which gathers information on usual source of care for all family members, characteristics of usual source of care health providers, and barriers family members have faced in obtaining needed health care. Please see UNMTNDMC for all variables pertaining to reasons the respondent was unable to obtain or had to delay necessary medical care and ACCESSELIG for more information about the Access to Care section.
+
+IPUMS MEPS reports the universe for each variable based on a thorough review of the original MEPS documentation. Investigating the data may reveal cases that do not meet the stated universe. Users are encouraged to validate universes for their analyses.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>No</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Yes</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know (1993-96: DK or refused)</labl>
+  </catgry>
+  <concept vocab="IPUMS">Delayed/Unmet Need Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="HINOTCOV" dcml="0" files="ExtractData" intrvl="discrete" name="HINOTCOV">
+  <location EndPos="135" StartPos="134" width="2"/>
+  <labl>Has no health insurance (excluding single service plans)</labl>
+  <txt><![CDATA[For all persons, HINOTCOV indicates whether the individual was not covered by health insurance at any time in the current calendar year. If an individual indicates not being covered by any of the forms of health insurance listed below, they are set to "Yes, has no coverage." If they indicate being covered by at least one of those methods for any length of time during the current calendar year, they are marked as "No, has coverage." An individual's response to other health insurance variables determines their health insurance coverage status. The variables HIPRIVATE, HICHAMPANY, HIMACHIP, HIMCARE, HIOTHGOVA, and HIOTHGOVB indicate whether an individual was covered by private health insurance, military health insurance, Medicaid and/or SCHIP, Medicare, or other public health insurance at any point during the current calendar year.]]></txt>
+  <catgry>
+    <catValu>00</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>01</catValu>
+    <labl>No, has coverage</labl>
+  </catgry>
+  <catgry>
+    <catValu>02</catValu>
+    <labl>Yes, has no coverage</labl>
+  </catgry>
+  <catgry>
+    <catValu>09</catValu>
+    <labl>Unknown/refused</labl>
+  </catgry>
+  <concept vocab="IPUMS">General Coverage Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="HIPRIVATE" dcml="0" files="ExtractData" intrvl="discrete" name="HIPRIVATE">
+  <location EndPos="137" StartPos="136" width="2"/>
+  <labl>Has any private health insurance</labl>
+  <txt><![CDATA[For all persons, HIPRIVATE is an annual summary variable that indicates whether the person had private health insurance coverage from any source, including TRICARE/CHAMPVA, for at least one day during the calendar year. This variable was constructed by AHRQ staff based on the values of the corresponding 12 month-by-month private health insurance coverage variables (PRIJA-PRIDE).]]></txt>
+  <catgry>
+    <catValu>01</catValu>
+    <labl>No</labl>
+  </catgry>
+  <catgry>
+    <catValu>02</catValu>
+    <labl>Yes</labl>
+  </catgry>
+  <concept vocab="IPUMS">General Coverage Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="CANCEREV" dcml="0" files="ExtractData" intrvl="discrete" name="CANCEREV">
+  <location EndPos="138" StartPos="138" width="1"/>
+  <labl>Ever told had cancer</labl>
+  <txt><![CDATA[For persons ages 18 and older who were living at the time of the Round 1 interview, CANCEREV identifies respondents who have been diagnosed with cancer. Respondents were asked if they have ever been told "by a doctor or other health professional that (PERSON) had cancer or a malignancy of any kind?"
+&nbsp;Beginning in Panel 12, CANCEREV was included as a Priority Condition in the Priority Conditions Enumeration (PE) section. For more information about how the panel design of the MEPS impacts data collection, please see the MEPS Panel Design user note. The PE section was asked in its entirety in Round 1 for all current or institutionalized persons, and in Rounds 2 and 4 only for new reporting unit members. In Rounds 3 and 5, the specific condition questions (except joint pain and chronic bronchitis) were asked only if the person had not reported the condition in a previous round; the joint pain and chronic bronchitis questions were asked in Rounds 3 and 5 for all current or institutionalized persons aged 18 or older, regardless of Round 1, Round 2, and Round 4 responses. However, beginning in 2017, the PE section is no longer asked in Round 5. The conditions included in the PE section are:
+
+High blood pressure, including multiple diagnoses (HYPERTENEV)
+
+Heart disease (including coronary heart disease, angina, myocardial infarction, and other unspecified heart disease) (CHEARTDIEV)
+
+Stroke (STROKEV)
+
+Emphysema (EMPHYSEMEV)
+
+Chronic Bronchitis
+
+High cholesterol, including the age of diagnosis (CHOLHIGHEV, CHOLHIGHAGE)
+
+Cancer
+
+Diabetes (DIABETICEV)
+
+Joint pain
+
+Arthritis (ARTHGLUPEV)
+
+Asthma (ASTHMAEV)
+
+Attention Deficit Hyperactivity Disorder/Attention Deficit Disorder (ADHD/ADD) (ADDEV)
+These conditions were selected because of their relatively high prevalence, and because generally accepted standards for appropriate clinical care have been developed.
+
+Beginning with Panel 12, condition data were collected at the person-by-round level (indicating if the person was ever diagnosed with the condition) and at the condition level. If the person reported having been diagnosed with a condition, the person-by-round variable was set to '1' (Yes) and a condition record for that medical condition was created.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>No</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Yes</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Cancer Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="CNBRES" dcml="0" files="ExtractData" intrvl="discrete" name="CNBRES">
+  <location EndPos="139" StartPos="139" width="1"/>
+  <labl>Ever had cancer: Breast</labl>
+  <txt><![CDATA[For persons age 18 and older who indicated "Yes" to the question of if they have ever been diagnosed as having cancer or malignancy of any kind (CANCEREV), CNBRES indicates if the type of cancer diagnosed was breast cancer. Cancer variables were introduced in 2008 as part of a series of questions on cancer.
+
+Users should note that males are not able to have values of "Mentioned" (2) for CNBRES and are effectively not in universe. Although all persons are in universe for CNBRES at the time of the interview, males who responded that they were diagnosed with breast cancer had their value of CNBRES recoded to "Not in universe" (0). Their value of CANCEREV was recoded to "Unknown-not ascertained" (8), and the corresponding values of remaining cancer variables were recoded to "Not in universe" (0).]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Not mentioned</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Mentioned</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Cancer Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="CNCOLN" dcml="0" files="ExtractData" intrvl="discrete" name="CNCOLN">
+  <location EndPos="140" StartPos="140" width="1"/>
+  <labl>Ever had cancer: Colon</labl>
+  <txt><![CDATA[For persons ages 18 and older who have ever been diagnosed as having cancer or a malignancy of any kind (CANCEREV), CNCOLN indicates if the type of cancer diagnosed was cancer of the colon. CNCOLNAG and CNCOLNRMS indicate the age the individual was diagnosed with colon cancer and whether the cancer is in remission, respectively. 
+
+For related variables and more information about the cancer variables included in MEPS, please see CNBLAD.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Not mentioned</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Mentioned</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Cancer Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="CNLUNG" dcml="0" files="ExtractData" intrvl="discrete" name="CNLUNG">
+  <location EndPos="141" StartPos="141" width="1"/>
+  <labl>Ever had cancer: Lung</labl>
+  <txt><![CDATA[For persons ages 18 and older who have ever been diagnosed as having cancer or a malignancy of any kind (CANCEREV), CNLUNG indicates if the type of cancer diagnosed was cancer of the lungs. CNLUNGAG and CNLUNGRMS indicate the age the individual was diagnosed with lung cancer and whether the cancer is in remission, respectively. 
+
+For related variables and more information about the cancer variables included in MEPS, please see CNBLAD.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Not mentioned</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Mentioned</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Cancer Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="CNPROS" dcml="0" files="ExtractData" intrvl="discrete" name="CNPROS">
+  <location EndPos="142" StartPos="142" width="1"/>
+  <labl>Ever had cancer: Prostate</labl>
+  <txt><![CDATA[For all males ages 18 and older who have ever been diagnosed as having cancer or a malignancy of any kind (CANCEREV), CNPROS indicates if the type of cancer diagnosed was cancer of the prostate. CNPROSAG and CNPROSRMS indicate the age the individual was diagnosed with prostate cancer and whether the cancer is in remission, respectively. 
+
+For related variables and more information about the cancer variables included in MEPS, please see CNBLAD.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Not mentioned</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Mentioned</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Cancer Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="SMOKENOW" dcml="0" files="ExtractData" intrvl="discrete" name="SMOKENOW">
+  <location EndPos="143" StartPos="143" width="1"/>
+  <labl>Smoke cigarettes now</labl>
+  <txt><![CDATA[For adults aged 18 and older, SMOKENOW indicates if the respondent currently smokes.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>No</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Yes</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Health Beliefs/Behaviors Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="EXPTOT" dcml="0" files="ExtractData" intrvl="contin" name="EXPTOT">
+  <location EndPos="150" StartPos="144" width="7"/>
+  <labl>Annual total of direct health care payments</labl>
+  <txt><![CDATA[For all persons, EXPTOT captures the sum of direct payments for care provided during the year, including out-of-pocket payments and payments by private insurance, Medicaid, Medicare, and other sources. Payments for over-the-counter drugs and indirect payments not related to specific medical events, such as Medicaid Disproportionate Share and Medicare Direct Medical Education subsidies, are not included in this amount. For more information on how MEPS collects expenditure data, please refer to our user note on medical expenditures.
+
+Related variables 
+Variables related to total annual health care expenditures by source of payment, total annual health care expenditures by type of medical service, and total annual health care charges are also available. Please refer to our user note on expenditures for a list of these variables.]]></txt>
+  <codInstr><![CDATA[CodesEXPTOT is a 6-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Total Expenditures Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="CHGTOT" dcml="0" files="ExtractData" intrvl="contin" name="CHGTOT">
+  <location EndPos="157" StartPos="151" width="7"/>
+  <labl>Annual total of charges for health care</labl>
+  <txt><![CDATA[For all persons, CHGTOT captures the sum of fully established charges for care received during the year, excluding those for prescribed medicines. This variable does not usually reflect actual payments made for services, which can be substantially lower due to factors such as negotiated discounts, bad debt, and free care. For more information on how MEPS collects expenditure and charge data, please refer to our user note on medical expenditures.
+
+Related variables 
+Variables related to total annual health care charges by source of payment, total annual health care charges by type of medical service, and analogous information for health care expenditures are also available. Please refer to our user note on medical expenditures for a list of these variables.]]></txt>
+  <codInstr><![CDATA[CodesCHGTOT is a 6-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Total Expenditures Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="OBTOTVIS" dcml="0" files="ExtractData" intrvl="contin" name="OBTOTVIS">
+  <location EndPos="160" StartPos="158" width="3"/>
+  <labl>Annual total number of visits made to office-based medical providers</labl>
+  <txt><![CDATA[For all persons, OBTOTVIS captures the total number of office-based medical provider visits during the year. These are encounters that took place primarily in office-based settings and clinics, and include visits to both physician (OBPHVIS) and non-physician (OBNPHVIS) providers. For a small proportion of sample persons, the sum of the physician and non-physician visit variables is less than the total number of office-based visits because OBTOTVIS contains reported visits where the respondent did not know the type of provider.
+
+Related variables 
+Summary variables related to the total number of office-based medical encounters are also available broken down by the type of medical provider seen, including physicians (OBPHVIS), non-physicians (OBNPHVIS), chiropractors (OBCHIVIS), nurse practitioners (OBNPVIS), optometrists (OBOPTVIS), physician assistants (OBPAVIS), and physical or occupational therapists (OBTHVIS).]]></txt>
+  <codInstr><![CDATA[CodesOBTOTVIS is a 3-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Office-Based Provider Visits Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="OBPHVIS" dcml="0" files="ExtractData" intrvl="contin" name="OBPHVIS">
+  <location EndPos="163" StartPos="161" width="3"/>
+  <labl>Annual total number of visits made to office-based physicians</labl>
+  <txt><![CDATA[For all persons, OBPHVIS captures the total number of visits to an office-based physician during the year. 
+
+Related variables 
+Refer to the page for total number of office-based medical provider visits (OBTOTVIS) to see a list of the types of office-based medical providers for which this information is available.]]></txt>
+  <codInstr><![CDATA[CodesOBPHVIS is a 3-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Office-Based Provider Visits Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="OBEXPTOT" dcml="0" files="ExtractData" intrvl="contin" name="OBEXPTOT">
+  <location EndPos="169" StartPos="164" width="6"/>
+  <labl>Annual total of direct health care payments to office-based medical providers</labl>
+  <txt><![CDATA[For all persons, OBEXPTOT captures the sum of direct payments for care provided during the year for all visits to office-based medical providers, including out-of-pocket payments and payments by private insurance, Medicaid, Medicare, and other sources. Payments for over-the-counter drugs and indirect payments not related to specific medical events, such as Medicaid Disproportionate Share and Medicare Direct Medical Education subsidies, are not included in this amount. For more information on how MEPS collects expenditure data, please refer to our user note on medical expenditures.
+
+Related variables 
+Variables related to total annual health care expenditures by source of payment, total annual health care expenditures by type of medical service, and total annual health care charges are also available. Please refer to our user note on expenditures for a list of these variables.]]></txt>
+  <codInstr><![CDATA[CodesOBEXPTOT is a 6-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Office-Based Provider Expenditures Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="OBCHGTOT" dcml="0" files="ExtractData" intrvl="contin" name="OBCHGTOT">
+  <location EndPos="176" StartPos="170" width="7"/>
+  <labl>Annual total charges for health care from office-based medical providers</labl>
+  <txt><![CDATA[For all persons, OBCHGTOT captures the sum of fully established charges for care received from office-based medical providers during the year, excluding those for prescribed medicines. This variable does not usually reflect actual payments made for services, which can be substantially lower due to factors such as negotiated discounts, bad debt, and free care. For more information on how MEPS collects expenditure and charge data, please refer to our user note on medical expenditures.
+
+Related variables 
+Variables related to total annual health care charges by source of payment, total annual health care charges by type of medical service, and analogous information for health care expenditures are also available. Please refer to our user note on medical expenditures for a list of these variables.]]></txt>
+  <codInstr><![CDATA[CodesOBCHGTOT is a 6-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Office-Based Provider Expenditures Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="OPTOTVIS" dcml="0" files="ExtractData" intrvl="contin" name="OPTOTVIS">
+  <location EndPos="182" StartPos="177" width="6"/>
+  <labl>Annual total number of visits made to outpatient medical providers</labl>
+  <txt><![CDATA[For all persons, OPTOTVIS captures the total number of outpatient medical provider visits during the year. These are encounters that took place primarily in outpatient medical providers settings and clinics, and include visits to both physician (OPPHVIS) and non-physician (OPNPHVIS) providers. For a small proportion of sample persons, the sum of the physician and non-physician visit variables is less than the total number of office-based visits because OPTOTVIS contains reported visits where the respondent did not know the type of provider.]]></txt>
+  <codInstr><![CDATA[CodesOPTOTVIS is a 3-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Outpatient Provider Visits Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="OPPHVIS" dcml="0" files="ExtractData" intrvl="contin" name="OPPHVIS">
+  <location EndPos="188" StartPos="183" width="6"/>
+  <labl>Annual total number of visits made to outpatient physicians</labl>
+  <txt><![CDATA[For all persons, OPPHVIS captures the total number of visits to an outpatient physician during the year.]]></txt>
+  <codInstr><![CDATA[CodesOPPHVIS is a 3-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Outpatient Provider Visits Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="OPEXPTOT" dcml="0" files="ExtractData" intrvl="contin" name="OPEXPTOT">
+  <location EndPos="194" StartPos="189" width="6"/>
+  <labl>Annual total of direct health care payments to outpatient medical providers</labl>
+  <txt><![CDATA[For all persons, OPEXPTOT captures the sum of direct payments for outpatient care provided during the year, including out-of-pocket payments and payments by private insurance, Medicaid, Medicare, and other sources. Payments for over-the-counter drugs and indirect payments not related to specific medical events, such as Medicaid Disproportionate Share and Medicare Direct Medical Education subsidies, are not included in this amount. For more information on how MEPS collects expenditure data, please refer to our user note on medical expenditures.
+
+Related variables 
+Variables related to total annual health care expenditures by source of payment, total annual health care expenditures by type of medical service, and total annual health care charges are also available. Please refer to our user note on expenditures for a list of these variables.]]></txt>
+  <codInstr><![CDATA[CodesOPEXPTOT is a 6-digit numeric variable.]]></codInstr>
+  <concept vocab="IPUMS">Outpatient Provider Expenditures Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="ERTOTVIS" dcml="0" files="ExtractData" intrvl="discrete" name="ERTOTVIS">
+  <location EndPos="200" StartPos="195" width="6"/>
+  <labl>Annual total number of visits made to the emergency room</labl>
+  <txt><![CDATA[For all persons, ERTOTVIS captures the total number of emergency room medical provider visits during the year. These are encounters that took place primarily in emergency room settings and clinics, and include visits to both physician and non-physician providers. For a small proportion of sample persons, the sum of the physician and non-physician visit variables is less than the total number of emergency room visits because ERTOTVIS contains reported visits where the respondent did not know the type of provider.
+
+Related variables 
+Summary variables related to the total number of emergency room medical encounters are also available broken down by the type of medical provider seen, including physicians, non-physicians, chiropractors, nurse practitioners, optometrists, physician assistants, and physical or occupational therapists.]]></txt>
+  <concept vocab="IPUMS">Emergency Room Visits Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="EREXPTOT" dcml="0" files="ExtractData" intrvl="discrete" name="EREXPTOT">
+  <location EndPos="206" StartPos="201" width="6"/>
+  <labl>Annual total of direct health care payments for emergency room visits</labl>
+  <txt><![CDATA[For all persons, EREXPTOT captures the sum of direct payments for care provided during the year for all visits to emergency room medical providers, including out-of-pocket payments and payments by private insurance, Medicaid, Medicare, and other sources. Payments for over-the-counter drugs and indirect payments not related to specific medical events, such as Medicaid Disproportionate Share and Medicare Direct Medical Education subsidies, are not included in this amount. For more information on how MEPS collects expenditure data, please refer to our user note on medical expenditures.
+&nbsp;Note that hospitals usually include expenses associated with emergency room visits that immediately result in an inpatient stay with the charges and payments for the inpatient stay. Therefore, to avoid the potential for double counting when imputing missing expenses, separately reported facility expenditures for emergency room visits that were identified in the Medical Provider Component (MPC) as directly linked to an inpatient stay were included as part of the inpatient stay only (see HPCHGTOT and HPFCHT). This strategy to avoid double counting resulted in $0 facility expenditures for these emergency room visits (but there still may be associated separately-billing doctor expenses). However, these $0 emergency room visits are still counted as separate visits in the utilization variable ERTOTVIS.Related variables 
+Variables related to total annual health care expenditures by source of payment, total annual health care expenditures by type of medical service, and total annual health care charges are also available. Please refer to our user note on expenditures for a list of these variables.]]></txt>
+  <concept vocab="IPUMS">Emergency Room Expenditures Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="HPTOTDIS" dcml="0" files="ExtractData" intrvl="discrete" name="HPTOTDIS">
+  <location EndPos="212" StartPos="207" width="6"/>
+  <labl>Annual total number of hospital discharges</labl>
+  <txt><![CDATA[For all persons, HPTOTDIS captures the total number of hospital discharges the person had during the current calendar year. HPTOTDIS includes hospitalizations where the person was discharged the same day that they were admitted ("zero-night stays," ZNTOTVIS) and hospitalizations where the person spent one or more nights in the hospital before being discharged. To obtain the total number of hospitalizations where persons spent at least one night in the hospital, analysts can subtract ZNTOTVIS from HPTOTDIS.]]></txt>
+  <concept vocab="IPUMS">Hospitalizations Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="HPTOTNIGHT" dcml="0" files="ExtractData" intrvl="discrete" name="HPTOTNIGHT">
+  <location EndPos="218" StartPos="213" width="6"/>
+  <labl>Annual total number of nights associated with hospital discharges</labl>
+  <txt><![CDATA[For all persons, HPTOTNIGHT captures the total number of nights the person spent in the hospital during the current calendar year.]]></txt>
+  <catgry>
+    <catValu>000998</catValu>
+    <labl>Not ascertained</labl>
+  </catgry>
+  <concept vocab="IPUMS">Hospitalizations Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="HPEXPTOT" dcml="0" files="ExtractData" intrvl="discrete" name="HPEXPTOT">
+  <location EndPos="224" StartPos="219" width="6"/>
+  <labl>Annual total expenses for hospitalizations</labl>
+  <txt><![CDATA[For all persons, HPEXPTOT captures the sum of direct payments for all inpatient hospital visits made during the year. This includes payments for hospital facility expenses (including direct hospital care, including room and board, diagnostic and laboratory work, x-rays, and similar charges, as well as any physician services included in the hospital charge) and "separately billing doctor" or SBD expenses (including services provided to patients in hospital settings by providers like radiologists, anesthesiologists, and pathologists, whose charges are often not included in hospital bills). Payments for over-the-counter drugs and indirect payments not related to specific medical events, such as Medicaid Disproportionate Share and Medicare Direct Medical Education subsidies, are not included in this amount. For more information on how MEPS collects expenditure data, please refer to our user note on medical expenditures.
+
+Some analysts may prefer to handle "zero-night stays" differently from other inpatient analyses. While zero-night stays are included in HPEXPTOT, analysts may use ZNFEXT and ZNPREXT for the total expenditures for zero-night stay facility expenses and SBD expenses, respectively. Analysts choosing to exclude zero-night stays from inpatient stays and using other expenditure variables should remove the zero-night stay variables from the corresponding total inpatient hospital expenditures variables.
+
+Because of inconsistent reporting of discharges of infants without complications, AHRQ staff have edited inpatient utilization and expenditure variables to exclude newborns where the newborn left the hospital on the same day as the mother. AHRQ documentation notes that charges for newborns without complications are typically included in the mother's hospital bill. However, in cases where newborns are discharged at a later date than the mother, the newborn's stay is considered separate from the mother in the construction of inpatient utilization and expenditure variables. 
+
+Related variables 
+Variables related to total annual health care expenditures by source of payment, total annual health care expenditures by type of medical service, and total annual health care charges are also available. Please refer to our user note on expenditures for a list of these variables.]]></txt>
+  <concept vocab="IPUMS">Hospitalization Expenditures Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="RXPRMEDSNO" dcml="0" files="ExtractData" intrvl="discrete" name="RXPRMEDSNO">
+  <location EndPos="227" StartPos="225" width="3"/>
+  <labl>Count of all prescribed medications purchased during the year</labl>
+  <txt><![CDATA[For all persons, RXPRMEDSNO is a count of all prescribed medications purchased during the year (including initial purchases and refills). For more information on how MEPS collects information about prescription medications, please refer to our user note on Collection of Information about Prescription Medications.]]></txt>
+  <concept vocab="IPUMS">Prescription Medications Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="RXEXPTOT" dcml="0" files="ExtractData" intrvl="discrete" name="RXEXPTOT">
+  <location EndPos="234" StartPos="228" width="7"/>
+  <labl>Sum of direct payments made during the year for prescribed medications</labl>
+  <txt><![CDATA[For all persons, RXEXPTOT captures the sum of direct payments made during the year for prescribed medications, including out-of-pocket payments and payments by private insurance, Medicaid, Medicare, and other sources. Payments for over-the-counter drugs and indirect payments not related to specific medical events, such as Medicaid Disproportionate Share and Medicare Direct Medical Education subsidies, are not included in this amount. For more information on how MEPS collects information about prescription medications, please refer to our user note on Collection of Information about Prescription Medications.
+
+Related variables 
+Variables related to total annual prescription medication expenditures by source of payment are also available. Please refer to our user note on expenditures for a list of these variables.]]></txt>
+  <concept vocab="IPUMS">Prescription Medication Expenditures Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="ADINSA" dcml="0" files="ExtractData" intrvl="discrete" name="ADINSA">
+  <location EndPos="235" StartPos="235" width="1"/>
+  <labl>Healthy, don't need health insurance</labl>
+  <txt><![CDATA[For adults aged 18 and older, ADINSA indicates how strongly the respondent believes that they are healthy enough that they don't really need health insurance.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Disagree strongly</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Disagree somewhat</labl>
+  </catgry>
+  <catgry>
+    <catValu>3</catValu>
+    <labl>Uncertain</labl>
+  </catgry>
+  <catgry>
+    <catValu>4</catValu>
+    <labl>Agree somewhat</labl>
+  </catgry>
+  <catgry>
+    <catValu>5</catValu>
+    <labl>Agree strongly</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Health Beliefs/Behaviors Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="ADRISK" dcml="0" files="ExtractData" intrvl="discrete" name="ADRISK">
+  <location EndPos="236" StartPos="236" width="1"/>
+  <labl>More likely to take risks</labl>
+  <txt><![CDATA[For adults aged 18 and older, ADRISK indicates how strongly the respondent believes that they are more likely to take risks than the average person.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Disagree strongly</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Disagree somewhat</labl>
+  </catgry>
+  <catgry>
+    <catValu>3</catValu>
+    <labl>Uncertain</labl>
+  </catgry>
+  <catgry>
+    <catValu>4</catValu>
+    <labl>Agree somewhat</labl>
+  </catgry>
+  <catgry>
+    <catValu>5</catValu>
+    <labl>Agree strongly</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Health Beliefs/Behaviors Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+<var ID="ADOVER" dcml="0" files="ExtractData" intrvl="discrete" name="ADOVER">
+  <location EndPos="237" StartPos="237" width="1"/>
+  <labl>Can overcome illness without medical help</labl>
+  <txt><![CDATA[For adults aged 18 and older, ADOVER indicates how strongly the respondent believes that they can overcome illness without help from a medically trained person.]]></txt>
+  <catgry>
+    <catValu>0</catValu>
+    <labl>NIU</labl>
+  </catgry>
+  <catgry>
+    <catValu>1</catValu>
+    <labl>Disagree strongly</labl>
+  </catgry>
+  <catgry>
+    <catValu>2</catValu>
+    <labl>Disagree somewhat</labl>
+  </catgry>
+  <catgry>
+    <catValu>3</catValu>
+    <labl>Uncertain</labl>
+  </catgry>
+  <catgry>
+    <catValu>4</catValu>
+    <labl>Agree somewhat</labl>
+  </catgry>
+  <catgry>
+    <catValu>5</catValu>
+    <labl>Agree strongly</labl>
+  </catgry>
+  <catgry>
+    <catValu>7</catValu>
+    <labl>Unknown-refused</labl>
+  </catgry>
+  <catgry>
+    <catValu>8</catValu>
+    <labl>Unknown-not ascertained</labl>
+  </catgry>
+  <catgry>
+    <catValu>9</catValu>
+    <labl>Unknown-don't know</labl>
+  </catgry>
+  <concept vocab="IPUMS">Health Beliefs/Behaviors Variables -- PERSON</concept>
+  <varFormat schema="other" type="numeric"/>
+</var>
+</dataDscr>
+</codeBook>

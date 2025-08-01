@@ -1,0 +1,381 @@
+---
+title: "Lectures 7 and 8 Code"
+author: "Alex Hoagland"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r preliminaries}
+################################################################################
+# I like to include several additional notes in the header of my files here:
+#
+# Last modified: 8/12/2022
+#
+### PURPOSE:
+  # Lectures 7 and 8 code and output file
+# 
+### NOTES:
+  # - uses the Tidyverse package and Dplyr
+################################################################################
+
+
+### 0. Load the packages we will need for this file ####
+library(tidyverse) # load the installed package for each new session of R
+library(broom)
+library(readxl) # Read in data
+library(modelsummary) # For making regression tables
+library(causaldata) # Useful toy data sets
+library(here) # Helpful in working with directories and projects
+library(AER) # this package has lots of applied metrics packages
+library(foreign) # Helpful for reading in data from Stata or other code languages 
+library(devtools)
+library(marginaleffects) # To calculate marginal effects
+library(pscl) # For hurdle models
+library(nnet) # For multinomial logit models
+library(knitr) # Alternative table package
+library(kableExtra) # Alternative table package
+library(gtsummary) # Alternative table package
+
+set.seed(03262020) 
+  # Setting the seed helps to make random number generators give us the same numbers across machines
+################################################################################
+```
+
+## Linear Probability Models
+
+Suppose we are estimated in the effect of how recently someone donated blood on whether or not they donated in March 2007. Let's first estimate a linear probability model:
+
+```{r lpm}
+mydata <- FFTrees::blood # data on blood donation 
+mydata <- mydata %>% rename(total_donated = total) 
+mydata %>% summary() 
+
+# Main (binary) outcome: did they donate in March 2007
+m1 <- lm(donation.crit ~ recency + frequency + time, data=mydata)
+  # how to interpret the recency dummy?
+msummary(list("LPM"=m1),
+         vcov=c("robust"),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+
+# Effect sizes in context? 
+  # Note: each month of recency is associated with a 1 percentage point decline in the likelihood of donating. How relevant is that? 
+mydata %>% select(donation.crit) %>% summarize(mean = mean(donation.crit)) %>% 
+  mutate(percentage_change = -.01/mean * 100) # What does this mean in context?
+
+# Alternate example: Insurance coverage as a function of enrollee age, sex, BMI, smoker status, and the number of children in the home. Let's estimate and interpret the LPM.
+# mydata <- readxl::read_xlsx(here("HealthExpenses.xlsx"))
+# 
+# # Main (binary) outcome: who has coverage?
+# m1 <- lm(coverage ~ age + sex + bmi + children + smoker,data=mydata)
+# msummary(list("LPM"=m1),
+#          vcov=c("robust"),
+#          stars=c('*' = .1, '**' = .05, '***' = .01))
+```
+
+One thing that we need to be concerned about with an LPM is predicted probabilities that fall outside of the unit interval (e.g., are not probabilities). Does that happen here? How does the model do for prediction generally?
+
+```{r pred-prob}
+
+# Look at predictions
+mydata$pred_donation <- predict(m1, mydata)
+hist(mydata$pred_donation) # what problems do you see here? 
+summary(mydata) # First problem: some predictions are outside of the unit interval!
+mydata %>% filter(pred_donation > 1.1) # What does it mean to have a 110% probability of donating?
+
+hist(mydata$pred_donation) # Second problem: how do you go from a predicted 57% probability of Y=1 to predicting Y? 
+mydata <- mydata %>% mutate(yhat = ifelse(pred_donation >= 0.5, 1, 0)) # What happens if we assume a cutoff (Yhat >= 50% means Yhat = 1)? How good is our match then?
+table(mydata$donation.crit, mydata$yhat) # We incorrectly match 22.6% of the data! And we only predict a few donations. Can we play around with this (lower thresholds?)
+```
+
+## Logit and Probit Models
+
+Instead of an LPM, let's try estimating logit and probit models of the same equation:
+
+```{r logit}
+
+# Logit
+library(fixest) 
+m2 <- feglm(donation.crit ~ recency + frequency + time, data=mydata,
+          family='binomial'(link='logit')) # since we have binary data
+
+# Probit
+m3 <- feglm(donation.crit ~ recency + frequency + time, data=mydata,
+          family='binomial'(link='probit')) # since we have binary data
+
+msummary(list("LPM"=m1,"Logit"=m2,"Probit"=m3),
+         vcov=c(rep("robust",3)),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+```
+
+We can visualize the output of a logit/probit regression (somewhat; see below) using an odds plot
+
+```{r odds-plot}
+# Fitted regression "lines"
+library(ggdist) # Cool extensions for ggplot
+ggplot(mydata,aes(x=recency,y=donation.crit))+
+  geom_dots(aes(side=ifelse(donation.crit == 1, "bottom", "top")),
+            pch=19, color="gray70", scale=0.2) + 
+  geom_smooth(method="glm", method.args = list(family = binomial(link = "logit")),
+              size=1, color='green', se = FALSE) + 
+  labs(x="Months since last donation", y="Pr(Donates)")
+
+# Another option: coefplot (useful in many settings! )
+library(fixest) # note: do not use the coefplot library! Much harder to use!
+fixest::coefplot(m1,drop = "Constant") + theme_classic() # coefplot of LPM. Why do we like this?
+
+# Now, let's do coefplot of logit
+fixest::coefplot(m2,drop = "Constant") + theme_classic()
+# See below for coefplot once converted to marginal effects
+```
+
+What do these coefficients mean? Why are the logit and probit so different?
+
+Recall that we need to compare the **marginal effects** across regressions, as the actual coefficient magnitudes are meaningless without making the appropriate transformations. Let's calculate each type of marginal effect for the logit model (doing so for the probit model is very similar)
+
+```{r marginal-fx}
+
+# 1. Each individual marginal effect
+allmarginaleffects <- marginaleffects(m2) # Gives you individual ME for all variables/observations
+allmarginaleffects <- allmarginaleffects %>% 
+  mutate(bin = ifelse(p.value > 0.1, 0, 
+                      ifelse(p.value <= 0.1 & p.value > 0.05, 1, 
+                        ifelse(p.value <= 0.05 & p.value > 0.01, 2, 3))))
+allmarginaleffects %>% filter(term == "recency") %>% 
+  ggplot(aes(x=estimate)) + 
+  geom_histogram(alpha=0.4, fill='blue', color='blue') + 
+  theme_classic() + 
+  labs(x="Marginal Effect", y = "Value", fill = "Significance")
+
+# 2. and 4. MER and MEM: use the datagrid() function
+summary(marginaleffects(m2, datagrid(recency = 7, frequency = 4, time = 31, grid.type = 'counterfactual')))
+
+# 3. AME
+summary(marginaleffects(m2)) # This gives you AME
+# plot_slopes(marginaleffects(m2)) # Convenience plot 
+
+# 4. MEM: 
+summary(marginaleffects(m2, datagrid()))
+```
+
+Finally, suppose that we want to test the joint hypothesis of age and sex on coverage decisions. We can do this in a nonlinear regression model using the Wald test. To run this test, we need to have stored an object with the full model (e.g., including age and sex) and a restricted model (where, under the null hypothesis, these coefficients are forced to be zero):
+
+```{r wald}
+# Full model is m2 -- already estimated
+restricted <- feglm(coverage ~ bmi + children + smoker,data=mydata,
+          family='binomial'(link='logit')) 
+  # Note: full and restricted model need to be estimated with same package
+  # Restricted model is where age and sex are both 0
+lmtest::waldtest(m2,restricted) 
+```
+
+What does this test tell us?
+
+## Poisson Regression
+
+Now, suppose that our outcome of interest is not whether or not an individual purchased insurance, but the number of health visits they selected in a year.
+
+### Preliminaries
+
+First, I will simulate some data and bake in some correlations. You can mostly ignore this code
+
+```{r sim-data}
+mydata$numvisits <- rpois(1340,2) # Base numvisits
+# Now bake in some correlation
+mydata <- mydata %>% 
+  mutate(numvisits = ifelse(age >= 65,round(numvisits*1.5),numvisits)) %>%
+  mutate(numvisits = ifelse(age < 35,round(numvisits*0.5),numvisits)) %>%
+  mutate(numvisits = ifelse(sex == "male",round(numvisits*0.8),numvisits)) %>%
+  mutate(numvisits = numvisits * bmi/31) %>%
+  mutate(numvisits = ifelse(numvisits > 10, 10, numvisits)) %>% 
+  mutate(numvisits = ifelse(smoker == 1, numvisits * 2, numvisits)) %>% 
+  mutate(numvisits = numvisits * expenses/9000) %>% 
+  mutate(numvisits = ifelse(numvisits > 10, 10, numvisits)) %>% 
+  mutate(numvisits = ifelse(coverage == 1,round(numvisits*1.2),numvisits))
+mydata$numvisits <- as.integer(mydata$numvisits)
+hist(mydata$numvisits)
+```
+
+You can see that after the simulations, the distribution of the number of visits looks pretty similar to how it would look if we could use claims data.
+
+### Poisson Regression
+
+Let's use all of our variables to model the decision to choose health visits. In particular, suppose that we are after the impact of insurance coverage on total utilization (measured in visit counts)?
+
+```{r poisson}
+m_poisson <- glm(numvisits ~ coverage + age + sex + bmi + children + smoker,data=mydata,
+                 family = "poisson"(link = "log")) # Why is our link function the log function?
+m_naive <- lm(numvisits ~ coverage + age + sex + bmi + children + smoker,data=mydata) # Naive OLS
+msummary(list("Naive"=m_naive,"Poisson"=m_poisson),
+         vcov=c(rep("robust",2)),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+```
+
+We interpret these regressions, again, by looking at the marginal effects (in this case, we can also look at rate ratios; the preference really depends on the field/journal more than the research question).
+
+```{r me-p}
+exp(m_poisson$coefficients)-1 # What is the marginal effect for coverage? What is the rate ratio?
+```
+
+### Testing for Dispersion
+
+We also need to test for overdispersion in order to run a Poisson model. That is, we want to test whether the mean and variance of our sample data are equivalent.
+
+```{r dispersion}
+var(mydata$numvisits)/mean(mydata$numvisits) # Lots of overdisperson! Could bootstrap this to get a CI. 
+```
+
+How does that affect our estimation decision? What can we do if we suffer from overdispersion?
+
+## Hurdle Model
+
+Given that we have so much overdispersion, the Poisson model may not be the best choice -- we could look at a zero-inflated model or a negative binomial approach. But let's also consider the fact that many individuals may not use **any** care in a year, so that `numvisits=0`. Does our Poisson model capture that well?
+
+```{r pred-zeros}
+mydata$predicted_visits <- predict(m_poisson, type = "response")
+ggplot(mydata)+
+  geom_histogram(aes(x=numvisits),position='dodge',fill='blue',alpha=0.3)+
+  geom_histogram(aes(x=predicted_visits),position='dodge',fill='red',alpha=0.5)+
+  theme_classic()+
+  labs(x="# of Visits",y="Count")
+
+# sum the probabilities of a 0 count for each mean
+exp <- sum(dpois(x = 0, lambda = mydata$predicted_visits))
+round(exp) # predicted number of 0's
+sum(mydata$numvisits == 0) # Observed number of 0's
+```
+
+Not really.
+
+Instead, what if we estimated a hurdle model where we modeled the decision to seek **any** care (extensive margin) separately from the decision of how many visits to have (intensive margin). Note that when estimating a hurdle model, we have some package conflict issues with `modelsummary()` so our tables won't look quite as nice here.
+
+```{r hurdle}
+mod.hurdle <- hurdle(numvisits ~ age + sex + bmi + children + smoker + coverage, data = mydata)
+  # First, suppose we have same covariates in both stage of the model 
+
+# Model summary doesn't work as well with the pscl package
+summary(mod.hurdle)$coefficients
+
+# How does it do for prediction? 
+sum(predict(mod.hurdle, type = "prob")[,1]) # Note: by design, hurdle model gives you exact number of 0s in data
+mydata$new_pred <- floor(predict(mod.hurdle, type="response")) # Not sure that this prediction method is correct.
+ggplot(mydata)+
+  geom_histogram(aes(x=numvisits),position='dodge',fill='blue',alpha=0.3)+
+  geom_histogram(aes(x=new_pred),position='dodge',fill='red',alpha=0.5)+
+  theme_classic()+
+  labs(x="# of Visits",y="Count")
+```
+
+## Multinomial Logit Regression
+
+Finally, let's assume now that everyone in our data set has to have an MD visit, and either chooses (0) no treatment,(1) medication, or (2) surgery. How can we model the choice between these options? Multinomial logit!
+
+### Preliminaries
+
+Some more simulation of data:
+
+```{r simulation-2}
+mydata$choice <- sample(c(0,1,2),size=1340,replace=T,prob=c(0.5,0.25,0.25)) # Base choices
+# Now bake in some correlation
+mydata <- mydata %>% 
+  mutate(choice = ifelse(age >= 65,round(choice*1.5),choice)) %>%
+  mutate(choice = ifelse(choice > 2, 2, choice)) %>%
+  mutate(choice = ifelse(age < 35,round(choice*0.5),choice)) %>%
+  mutate(choice = ifelse(choice < 0, 0, choice)) %>%
+  mutate(choice = ifelse(sex == "male",round(choice*1.5),choice)) %>%
+  mutate(choice = ifelse(choice > 2, 2, choice)) %>%
+  mutate(choice = ifelse(bmi >= 32 & choice == 2,sample(c(0,1),replace=T,prob=c(0.3,0.7)), choice)) %>%
+  mutate(choice = ifelse(smoker == 1 & choice == 2,sample(c(0,1),replace=T,prob=c(0.5,0.5)), choice)) %>%
+  mutate(choice = ifelse(smoker == 1 & choice == 1,sample(c(0,1),replace=T,prob=c(0.7,0.3)), choice)) %>%
+  mutate(choice = ifelse(expenses >= 17000,round(choice*1.5),choice)) %>%
+  mutate(choice = ifelse(choice > 2, 2, choice)) %>%
+  mutate(choice = ifelse(coverage == 1,round(choice*1.5),choice)) %>%
+  mutate(choice = ifelse(choice > 2, 2, choice))
+hist(mydata$choice)
+```
+
+This shows us the choices individuals make in our (made up) data set. Now let's estimate!
+
+### Estimation
+
+First, we select our comparison outcome (in this case, no treatment). The best way to characterize this variable in R (for our package to understand it) is as a **factor**, which includes both a number ID and a value label for each choice in the discrete set. We've already been working with these a little bit (as dummy variables), but now we want to really have a 3-plus level factor variable for our multinomial logit to make sense.
+
+Again, `modelsummary()` won't work well here, so we'll use a separate package to make some tables.
+
+```{r mn-logit}
+mydata$choice <- factor(mydata$choice,levels=c(0,1,2),labels=c("Monitoring","Medication","Surgery")) 
+
+mydata$region <- factor(mydata$region,levels=c("northeast","northwest","southeast","southwest"),labels=c("northeast","northwest","southeast","southwest"))
+  # Let's us include this straight and calculate dummies automatically
+
+mydata$choice_relative <- relevel(mydata$choice, ref = "Monitoring")
+mnl <- multinom(choice_relative ~ age + sex + bmi + children + smoker + expenses + coverage + region,
+                data = mydata) # Discuss iterations and output
+
+summary(mnl)
+```
+
+### Presentation
+
+Now that the model has been estimated, let's try (being the operative word) to present this in a well-formatted and easy-to-understand way. This model is already complicated, so even without the package conflicts it can be tricky to know how to summamrize it. Below are some options--the way you choose to summarize this model will be entirely depeendent on the research context and the parameters you are after.
+
+```{r mnl-presentation}
+# Calculate our own significance
+z <- summary(mnl)$coefficients/summary(mnl)$standard.errors
+p <- (1 - pnorm(abs(z), 0, 1)) * 2
+
+# Presenting the model: some options
+# View(tidy(mnl, conf.int = TRUE)) # Can save this as an object to construct your own table
+
+# an HTML version
+tidy(mnl, conf.int = TRUE) %>% 
+  kable() %>% 
+  kable_styling("basic", full_width = FALSE)
+
+# This gives you a table of relative risk ratios
+tbl_regression(mnl, exp = TRUE)
+
+# Interperting the model
+exp(coef(mnl)) # this gives us relative risk ratios -- see slides about odds ratios
+
+# Calculating marginal effects: 
+myme <- marginaleffects(mnl, type = "probs")
+# Warning: The standard errors estimated by `marginaleffects` do not match those
+# produced by Stata for `nnet::multinom` models. Please be very careful when
+# interpreting the results.
+summary(myme)
+```
+
+### Model Performance
+
+Finally, we need to check the accuracy of the model. Let's do this in a table *and* a figure.
+
+```{r accuracy}
+mydata$predicted_choice <- predict(mnl,newdata=mydata,"class")
+ctable <- table(mydata$choice_relative,mydata$predicted_choice) # Building classification table
+ctable
+round((sum(diag(ctable))/sum(ctable))*100,2) # Calculating accuracy - sum of diagonal elements divided by total obs
+  # 71.12% accuracy doesn't sound bad. 
+
+ggplot(data=mydata,aes()) + 
+  geom_histogram(aes(x=as.numeric(choice)-.1),fill='blue',alpha=0.3,position='dodge') + 
+  geom_histogram(aes(x=as.numeric(predicted_choice)+.1),fill='red',alpha=0.5,position='dodge') + 
+  theme_minimal() + 
+  labs(x="Choice",y="Count") # But don't forget to visualize it! 
+```
+
+## Package Citations
+
+```{r, include=FALSE}
+print("=============================Works Cited=============================")
+loadedNamespaces() %>%
+map(citation) %>%
+print(style = "text") # Adds citations for each package to end of .rmd file
+
+knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
+
+# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS.  
+```

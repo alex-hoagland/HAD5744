@@ -1,0 +1,179 @@
+---
+title: "Lecture 6 Code"
+author: "Alex Hoagland"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r header}
+################################################################################
+# I like to include several additional notes in the header of my files here:
+#
+# Last modified: 8/12/2022
+#
+### PURPOSE:
+  # Lecture 6 code and output file
+# 
+### NOTES:
+  # - uses the Tidyverse package and Dplyr
+################################################################################
+
+
+### 0. Load the packages we will need for this file ####
+library(tidyverse) # load the installed package for each new session of R
+library(broom)
+library(readxl) # Read in data
+library(modelsummary) # For making regression tables
+library(causaldata) # Useful toy data sets
+library(here) # Helpful in working with directories and projects
+library(AER) # this package has lots of applied metrics packages
+library(gmm) # For estimation by GMM
+
+set.seed(03262020) # Setting the seed helps to make random number generators give us the same numbers across machines
+################################################################################
+```
+
+## Preliminaries
+
+Let's simulate some data on individual blood types. You can mostly ignore this code, it's a little complicated because I was trying to bake in some correlations so this exercise would be at least a little interesting.
+
+```{r sim-data}
+
+mydata <- data.frame(
+  id = 1:10000,
+  age = sample(seq(0,100,1),size=10000,replace=T),
+  blood_type = sample(c("O_pos", "A_pos", "B_pos", "O_neg", "A_neg", "AB_pos", "B_neg", "AB_neg"), size=10000, replace=T, 
+                      prob=c(0.38, 0.34, 0.09, 0.07, 0.06, 0.03, 0.02, 0.01)), # https://www.statista.com/statistics/1112664/blood-type-distribution-us/
+  wait_time = rexp(n=10000) * 100 # Waiting times in days
+)
+
+# Correlation between blood type and waiting times
+mydata <- mydata %>% mutate(wait_time = ifelse(blood_type == "A_pos",wait_time * 0.12, 
+                                               ifelse(blood_type == "A_neg", wait_time * 0.12,
+                                                      ifelse(blood_type == "B_pos", wait_time * 0.46,
+                                                             ifelse(blood_type == "B_neg", wait_time * 0.46,
+                                                                    ifelse(blood_type == "AB_pos", wait_time * 0.05,
+                                                                           ifelse(blood_type == "AB_neg", wait_time * 0.05,
+                                                                                  ifelse(blood_type == "O_pos", wait_time * 0.54,
+                                                                                         wait_time * 0.54))))))))
+
+# Add in outcome variable
+mydata <- mydata %>% mutate(mortality = ifelse(wait_time > 180, sample(c(0,1), size=10000, replace = T, prob = c(0.75, 0.25)), 
+                                               ifelse(wait_time > 90, sample(c(0,1), size=10000, replace = T, prob = c(0.8, 0.2)),
+                                                      ifelse(wait_time > 60, sample(c(0,1), size=10000, replace = T, prob = c(0.9, 0.1)),
+                                                             sample(c(0,1), size=10000, replace = T, prob = c(0.97, 0.03)))))) # Probability of mortality depends on wait times 
+```
+
+I'm also going to bake in some endogeneity by including something unseen (age) that causes both $x$ and $y$
+
+```{r endogeneity}
+mydata <- mydata %>% mutate(wait_time = wait_time * abs(age-30)/sd(age), 
+                            mortality = round(mortality * abs(age-30)))
+mydata[which(mydata$mortality>1),]$mortality <- 1 # Only let mortality be factor variable
+```
+
+## IV "by hand"
+
+Let's first walk through what it means to calculate the 2SLS estimator by running each stage separately. Remember that there's a lot of value in coding up your own estimators so that you really understand what's going on under the hood (of course, you have to be willing to write up your own corrections to standard errors and/or bootstrap as well).
+
+```{r iv-by-hand}
+
+# first, simple regression -- what is "simplistic" effect of wait times on mortality? 
+mydata <- mydata %>% mutate(wt_months = wait_time / 30 ) # Measure wait times in months
+m1 <- lm(mortality ~ wt_months,data=mydata)
+msummary(list("Naive"=m1),
+         vcov=c("robust"),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+  # Strong positive effect -- longer wait times equals higher mortality. 
+
+# First stage regression of IV: Wait times on blood type
+mydata <- mydata %>% mutate(rare = ifelse(blood_type %in% c("O_pos","O_neg","B_pos","B_neg"), 1, 0))
+m2 <- lm(wt_months ~ rare,data=mydata)
+msummary(list("First Stage"=m2),
+         vcov=c("robust"),
+         tab_header=c("First Stage"),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+# Strong positive effect -- rare blood types wait a month and a half longer than others
+
+# Build second stage by predicting X with Z: 
+mydata$pred_x <- predict(m2, mydata) # Note that predicted X only takes on two values -- why?
+
+# Regress outcome on pred_X
+m3 <- lm(mortality ~ pred_x,data=mydata)
+msummary(list("Naive"=m1,"2SLS"=m3),
+         vcov=c("robust","robust"),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+# Once instrumented, the effect is (statistically) *higher* 
+```
+
+The instrument definitely changes things here by adjusting for unseen covariates (age, pickiness, etc.). But is the instrument valid?
+
+Only the relevance condition is statistically testable -- let's do that first:
+
+```{r first-stage}
+msummary(list(m2),
+         vcov=c("robust"),
+         tab_header=c("First Stage"),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+```
+
+Doesn't look like we have a relevance problem! Of course, given the simulated data, that shouldn't be too much of a shock.
+
+## IV in practice
+
+### IV with a package
+
+There are many ways to run 2SLS. The most common is `ivreg()` from the `AER` package (Another good option is `feols()` from `fixest`). A package can help you quickly return objects that are important to you without you writing tedious functions, and can do important things like standard error corrections. Just make sure you know what's going on in the package (for example, by checking out \`?ivreg').
+
+```{r ivreg}
+m4 <- ivreg(mortality ~ wt_months | blood_type, data=mydata,x=T) # the function of use is ivreg
+msummary(list("Simplistic"=m1,"IV By Hand"=m3,"IV By AER"=m4),
+         vcov=c("robust","robust","robust"),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+```
+
+### Correcting for weak instruments
+
+The easiest way to correct for instruments that don't fully meet the relevance condition (aside from finding a better instrument) is to use Anderson-Rubin confidence intervals (Anderson, Theodore W, and Herman Rubin. 1949. "Estimation of the Parameters of a Single Equation in a Complete System of Stochastic Equations." *The Annals of Mathematical Statistics 20*(1): 46--63.)
+
+This requires downloading an archived package, since it's not kept up to date as frequently. I've laid it out here:
+
+```{r weak-iv}
+url <- "https://cran.r-project.org/src/contrib/Archive/ivpack/ivpack_1.2.tar.gz"
+pkgFile <- "ivpack_1.2.tar.gz"
+download.file(url = url, destfile = pkgFile)
+install.packages(pkgs=pkgFile, type="source", repos=NULL)
+library(ivpack) 
+
+ivpack::anderson.rubin.ci(m4, conflevel = 0.95)
+```
+
+### Estimating 2SLS with GMM
+
+GMM is also easy to implement in R (depending on how complicated your model is, of course).
+
+```{r gmm}
+m5 <- gmm(mortality ~ wt_months, # Main regression
+         ~ blood_type, data = mydata)
+
+# We can apply the address clustering most easily in msummary
+msummary(list("GMM"=m5),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+```
+
+## Package Citations
+
+```{r, include=FALSE}
+print("=============================Works Cited=============================")
+loadedNamespaces() %>%
+map(citation) %>%
+print(style = "text") # Adds citations for each package to end of .rmd file
+
+knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
+
+# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS. 
+```

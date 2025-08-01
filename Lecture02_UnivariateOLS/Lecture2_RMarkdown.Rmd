@@ -1,0 +1,275 @@
+---
+title: "Lecture 2 Code"
+author: "Alex Hoagland"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r header}
+################################################################################
+# I like to include several additional notes in the header of my files here:
+#
+# Last modified: 9/20/2024
+#
+### PURPOSE:
+  # Lecture 2 code and output file
+# 
+### NOTES:
+  # - uses the Tidyverse package and Dplyr
+################################################################################
+
+
+### 0. Load the packages we will need for this file ####
+library(tidyverse) # load the installed package for each new session of R
+library(here) # for file organization
+library(broom) # helps for storing regression output
+
+set.seed(122333) # Setting the seed helps to make random number generators give us the same numbers across machines
+################################################################################
+```
+
+## Probability Review
+
+### Assigning Probabilities
+
+Let's keep the example of **health state** as a random variable, and assign some (made-up) probabilities:
+
+```{r sample-probs}
+##### Probability Review #####
+p_healthy <- 0.75 # Assign 3 main probabilities
+p_acute <- 0.2
+p_chronic <- 0.05
+```
+
+We also need to have some joint probabilities that tell us if there is any overlap between states. These help us calculate **conditional probabilities**, or how information about part of my state informs me about the rest of my health state.
+
+```{r joint-probs}
+p_acute_chronic <- 0.02 # Assign joint probabilities
+p_healthy_acute <- 0
+p_healthy_chronic <- 0
+p_healthy_acute_chronic <- 0
+
+# Conditional probabilities
+p_chronic_givenacute <- p_acute_chronic / p_acute
+```
+
+### Conditional Probabilities and Independence
+
+We can then test if the information is *independent* -- does knowing I have an acute condition inform me of the probability of a chronic one?
+
+```{r test-independence}
+p_chronic_givenacute == p_chronic * p_acute
+```
+
+### Total Probability
+
+How does my probability of having a chronic illness evolve over time? Let's first consider just two periods.
+
+```{r total-prob}
+# Total probability 
+day1 <- p_chronic # On first day, probability of illness is the known probability
+day2 <- p_chronic * (1-p_chronic) # The probability of being healthy on day1, then developing an illness on the second day 
+
+totalprob <- day1+day2 # Total probability is sum over time
+```
+
+Now suppose we want to know -- how long would I have to survive until my total probability was higher than 0.15? For this, we'll need a function.
+
+```{r total-prob-function}
+dayprob <- function(n) { 
+    # This function returns the probability of (i) being healthy until day n, then (ii) getting a chronic condition on day n 
+  return(p_chronic * (1-p_chronic)^(n-1))
+} 
+
+# Now let's apply the function
+mydata <- tibble( x=seq(1,10,by=1) ) %>%  # Periods 1 through 10
+  mutate(dayprob=dayprob(x)) %>% # Daily probability
+  mutate(totalprob = cumsum(dayprob)) # Total probability = sum of dailies 
+
+# What's the first day after which total prob is > 0.15?
+answer <- mydata %>% 
+  mutate(tokeep = totalprob>0.15) %>% 
+  filter(tokeep==1) %>% 
+  mutate(first = min(x)) %>% 
+  filter(row_number()==1) %>% 
+  pull(first)
+
+print(paste0("The number of days before totalprob > 0.15 is ", answer ,sep=""))
+```
+
+### Bayes' Rule
+
+Let's look at how learning information about my health state should lead you to update yours. we'll define this as a function again that just implements Bayes' rule:
+
+$$ P(A|B) = \frac{P(B|A)P(A)}{P(B)}$$
+
+```{r bayes}
+# Update function for p_chronic
+update_chronic <- function(oldprob) { 
+  p_x1_you_given_x3_me <- .7 
+    # Experiment with changing this probability to see how the graph below changes
+    # What happens if this is .75? .1? What does changing this mean in terms of the example? 
+  
+  p_x1_you_given_x1_me <- .75
+  num <- p_x1_you_given_x3_me * oldprob
+  den <- p_x1_you_given_x3_me * oldprob + p_x1_you_given_x1_me * (1-oldprob)
+  return(num/den) # Why write it this way? Just so each term is easily digestable. 
+    # Think of your code reader, not just the output!
+}
+```
+
+Once the function is defined, we run a simple simulation: how do our beliefs update for each day that our other family members do **not** come down with an illness?
+
+```{r bayes-simulation}
+mydata <- rep(NA, 100) # Set blanks for 100 days
+mydata[1] <- .05 # Set first probability at .05
+for (i in 2:100) { 
+  mydata[i] <- update_chronic(mydata[i-1])
+}
+
+# Now plot
+mydata <- tibble(mydata) %>% mutate(x=row_number())
+ggplot(mydata,aes(x,mydata)) + geom_point() + theme_minimal() + labs(x = "Day", y = "P(x_3)")
+```
+
+## Regression
+
+### Preliminaries
+
+Let's first set up our data in the case where we **know** our data generating process (DGP). Pretend that we know that
+
+$$ y = 5.5x+u $$
+
+for some random variation $u$.
+
+```{r data-setup}
+tb <- tibble(
+  x = rnorm(10000),
+  u = rnorm(10000),
+  y = 5.5*x + 12*u
+) # Here's our true model, with some randomness baked in
+```
+
+In this case, what happens when we run a regression of $y$ on $x$?
+
+```{r simple-reg}
+tb %>% lm(y ~ x, .) 
+```
+
+### Visualizing Regressions
+
+There's **a lot** we can do in R with regressions. Let's try some!
+
+```{r model-viz}
+# Looking at your model output
+reg_tb <- lm(y ~ x, data=tb) # Store regression as an object 
+
+
+summary(reg_tb) # gives you a full summary
+regdata <- broom::tidy(reg_tb, conf.int=TRUE) # Stores regression output in a data frame
+regouts <- broom::glance(reg_tb) # Stores other regression features in a data frame
+```
+
+Rather than just seeing what the regression returns (e.g., in a table), we can also look at its performance in the data (e.g., with more data visualizations)
+
+```{r reg-performance}
+tb <- tb %>% 
+  mutate(
+    yhat1 = predict(lm(y ~ x, .)),
+    yhat2 = 0.0732608 + 5.685033*x, 
+    uhat1 = residuals(lm(y ~ x, .)),
+    uhat2 = y - yhat2
+  ) # How close are our predictions? 
+
+summary(tb[-1:-3])
+```
+
+The most common visualization, especially for a one-dimensional regression, is just to plot the line against the data. Look closely at this command and let's walk through the syntax as we develop the plot.
+
+```{r reg-viz-2}
+tb %>% 
+  lm(y ~ x, .) %>% 
+  ggplot(aes(x=x, y=y)) + 
+  ggtitle("OLS Regression Line") +
+  geom_point(size = 0.05, color = "black", alpha = 0.5) +
+  geom_smooth(method = lm, color = "black") +
+  annotate("text", x = -1.5, y = 30, color = "red", 
+           label = paste("Intercept = ", -0.0732608)) +
+  annotate("text", x = 1.5, y = -30, color = "blue", 
+           label = paste("Slope =", 5.685033)) + 
+  theme_classic() + labs(x="X", y="Y")
+```
+
+### Measures of Regression performance
+
+Let's calculate the R-squared by hand first:
+
+```{r r2-manual}
+SST <- tb %>% mutate(ybar=mean(y), sst=(y-ybar)^2) %>% select(sst) %>% summarise(sum(sst))
+SSE <- tb %>% mutate(ybar=mean(y), sse=(yhat1-ybar)^2) %>% select(sse) %>% summarise(sum(sse))
+SSR <- tb %>% mutate(ssr=uhat1^2) %>% select(ssr) %>% summarise(sum(ssr))
+
+R2 <- SSE/SST
+print(paste0("The R-squared is ", round(as.numeric(R2)*100,digits=2), "%", sep=""))
+```
+
+You can also retrieve it straight from the lm command (this is almost always true for whatever regression object you might want!)
+
+```{r r2}
+summary(reg_tb) # Full summary
+round(summary(reg_tb)$r.squared,digits=4) # Specifically, the r-squared
+```
+
+### Unbiasedness of our regressions
+
+We've already shown that our model does reasonably well matching the truth, but can we show that in general? Let's try another simulation.
+
+First, let's start with a population model (which we assume we know, in order to show that our regression can approach it):
+
+$$ y = 3 + 2x + \varepsilon.$$ We will assume that $x$ and $\varepsilon$ are normally distributed, with $x \sim \mathcal{N}(0,9)$ and $\varepsilon \sim \mathcal{N}(0,36)$. We assume all the standard regression assumptions are met, so that $x$ and $\varepsilon$ are independent.
+
+Let's use this DGP to create a random sample of data ($N$=10,000) and run a regression. We will repeat this procedure 1,000 times, storing the regression coefficients each time.
+
+```{r unbiasedness}
+lm <- lapply( # lapply is a useful command (see ?lapply to access documentation)
+  1:1000,
+  function(x) tibble(
+    x = 9*rnorm(10000), # Distribution for x (rnorm(N) creates N random draws from a N(0,1) distribution)
+    u = 36*rnorm(10000), # Distribution for e
+    y = 3 + 2*x + u
+  ) %>% 
+    lm(y ~ x, .)
+) # This runs 1,000 regressions with new data every time
+# lapply is useful here since we want to resample data *and* do a regression at the same time. 
+```
+
+What are the results of this simulation? Let's make a table and a graph.
+
+```{r unbiasedness-results}
+as_tibble(t(sapply(lm, coef))) %>%
+  summary(x) # Summarize the regression coefficients (tabular)
+
+as_tibble(t(sapply(lm, coef))) %>% 
+  ggplot()+
+  geom_histogram(aes(x), binwidth = 0.01,fill="gray",color='black') + 
+  theme_minimal() + 
+  labs(x="Estimated Slope Coefficient", y="Count",title="Distribution of Slope Coefficients") + 
+  geom_vline(xintercept=2,color='red')
+```
+
+## Package Citations
+
+```{r, include=FALSE}
+print("=============================Works Cited=============================")
+loadedNamespaces() %>%
+map(citation) %>%
+print(style = "text") # Adds citations for each package to end of .rmd file
+
+knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
+
+# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS. 
+```
