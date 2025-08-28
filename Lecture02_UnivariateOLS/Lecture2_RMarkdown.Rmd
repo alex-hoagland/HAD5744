@@ -65,76 +65,9 @@ We can then test if the information is *independent* -- does knowing I have an a
 p_chronic_givenacute == p_chronic * p_acute
 ```
 
-### Total Probability
+### Expectations and Variance
 
-How does my probability of having a chronic illness evolve over time? Let's first consider just two periods.
-
-```{r total-prob}
-# Total probability 
-day1 <- p_chronic # On first day, probability of illness is the known probability
-day2 <- p_chronic * (1-p_chronic) # The probability of being healthy on day1, then developing an illness on the second day 
-
-totalprob <- day1+day2 # Total probability is sum over time
-```
-
-Now suppose we want to know -- how long would I have to survive until my total probability was higher than 0.15? For this, we'll need a function.
-
-```{r total-prob-function}
-dayprob <- function(n) { 
-    # This function returns the probability of (i) being healthy until day n, then (ii) getting a chronic condition on day n 
-  return(p_chronic * (1-p_chronic)^(n-1))
-} 
-
-# Now let's apply the function
-mydata <- tibble( x=seq(1,10,by=1) ) %>%  # Periods 1 through 10
-  mutate(dayprob=dayprob(x)) %>% # Daily probability
-  mutate(totalprob = cumsum(dayprob)) # Total probability = sum of dailies 
-
-# What's the first day after which total prob is > 0.15?
-answer <- mydata %>% 
-  mutate(tokeep = totalprob>0.15) %>% 
-  filter(tokeep==1) %>% 
-  mutate(first = min(x)) %>% 
-  filter(row_number()==1) %>% 
-  pull(first)
-
-print(paste0("The number of days before totalprob > 0.15 is ", answer ,sep=""))
-```
-
-### Bayes' Rule
-
-Let's look at how learning information about my health state should lead you to update yours. we'll define this as a function again that just implements Bayes' rule:
-
-$$ P(A|B) = \frac{P(B|A)P(A)}{P(B)}$$
-
-```{r bayes}
-# Update function for p_chronic
-update_chronic <- function(oldprob) { 
-  p_x1_you_given_x3_me <- .7 
-    # Experiment with changing this probability to see how the graph below changes
-    # What happens if this is .75? .1? What does changing this mean in terms of the example? 
-  
-  p_x1_you_given_x1_me <- .75
-  num <- p_x1_you_given_x3_me * oldprob
-  den <- p_x1_you_given_x3_me * oldprob + p_x1_you_given_x1_me * (1-oldprob)
-  return(num/den) # Why write it this way? Just so each term is easily digestable. 
-    # Think of your code reader, not just the output!
-}
-```
-
-Once the function is defined, we run a simple simulation: how do our beliefs update for each day that our other family members do **not** come down with an illness?
-
-```{r bayes-simulation}
-mydata <- rep(NA, 100) # Set blanks for 100 days
-mydata[1] <- .05 # Set first probability at .05
-for (i in 2:100) { 
-  mydata[i] <- update_chronic(mydata[i-1])
-}
-
-# Now plot
-mydata <- tibble(mydata) %>% mutate(x=row_number())
-ggplot(mydata,aes(x,mydata)) + geom_point() + theme_minimal() + labs(x = "Day", y = "P(x_3)")
-```
+How can we find these in data? Just by using descriptive commands, as discussed below! 
 
 ## Regression
 
@@ -152,6 +85,15 @@ tb <- tibble(
   u = rnorm(10000),
   y = 5.5*x + 12*u
 ) # Here's our true model, with some randomness baked in
+
+# What is our expectation of x? y? u? What about variance? 
+mean(tb$x)
+mean(tb$y)
+mean(tb$u)
+
+var(tb$x)
+var(tb$y)
+var(tb$u)
 ```
 
 In this case, what happens when we run a regression of $y$ on $x$?
@@ -261,6 +203,112 @@ as_tibble(t(sapply(lm, coef))) %>%
   geom_vline(xintercept=2,color='red')
 ```
 
+
+## Inference in regression 
+
+### How to obtain standard errors
+Just like a lot of other things, standard errors are stored in the lm object! 
+
+```{r ses}
+myout <- summary(lm_complex)
+myout$coefficients[,2]
+```
+
+### Hypothesis testing
+
+Let's start with a population model where: 
+$$ y = -1 - 0.5x + \varepsilon, \varepsilon \sim \mathcal{N}(0,1).$$
+
+We will use this DGP to create a small data set ($N=200$) and run a simple regression. Then, we will save the coefficient $\beta_1$ and its standard error. 
+```{r hyp-test}
+set.seed(0326)
+nulldata <- tibble(x=rnorm(200),
+                 epsilon=rnorm(200),
+                 y=-1-.5*x+epsilon)
+m1 <- lm(y ~ x,data=nulldata)
+out <- summary(m1) # I get a first estimate of beta = , and a SE = 
+myse <- out$coefficients[2,2] # store the SE
+```
+
+Our test, formally, is of the null hypothesis: 
+
+$$ \mathcal{H}_0: \beta_1 = 0. $$
+Let's plot our regression estimate against the sampling distribution of the null hypothesis
+```{r hyp-test-2} 
+myalf <- .05 # State the rejection probability
+
+# Plot my estimate against the sampling distribution of the null hypothesis 
+graphdata <- tibble(x=rnorm(1e4,mean=0,sd=myse), # normal distribution
+                    xrej = ifelse(x >= qnorm(1-(myalf)/2, mean=0, sd=myse),x,NA), # x's that fall in the rejection region based on alpha
+                    xrej2 = ifelse(-x >= qnorm(1-(myalf)/2, mean=0, sd=myse),x,NA), # x's that fall in the rejection region based on alpha
+                    y=dnorm(x,mean=0,sd=myse)
+)
+
+ ggplot(data=graphdata) + 
+  geom_density(aes(x)) + 
+  geom_area(data=subset(graphdata, !is.na(xrej)),aes(x=x,y=y),fill="gray") + 
+   geom_area(data=subset(graphdata, !is.na(xrej2)),aes(x=x,y=y),fill="gray") + 
+  geom_vline(xintercept=-0.5,linetype='dashed',color='red') + 
+  theme_minimal() + 
+  labs(x="Estimated Beta",y="Density")
+```
+
+So what do we conclude from the test? 
+
+#### One-sided testing
+
+What happens if I perform a one-sided test? This changes the rejection region (is that disingenious?)
+```{r hyp-test-3} 
+graphdata <- tibble(x=rnorm(1e5,mean=0,sd=myse), # normal distribution
+                     xrej = ifelse(x >= qnorm(1-(myalf), mean=0, sd=myse),x,NA), 
+                        # x's that fall in the rejection region based on alpha
+                     y=dnorm(x,mean=0,sd=myse)
+ )
+ 
+ ggplot(data=graphdata) + 
+   geom_density(aes(x)) + 
+   geom_area(data=subset(graphdata, !is.na(xrej)),aes(x=x,y=y),fill="gray") + 
+   geom_vline(xintercept=-0.5,linetype='dashed',color='red') + 
+   theme_minimal() + 
+   labs(x="Estimated Beta",y="Density")
+```
+
+#### Statistical power
+
+In general, adding more data adds to our statistical power -- the probability that we will uncover an effect that is truly in the DGP. Let's increase our sample size to 20,000 and see how this affects our standard error (and hence, our test statistic)
+
+```{r hyp-test-4}
+ nulldata <- tibble(x=rnorm(20000),
+                  epsilon=rnorm(20000),
+                  y=-1-.5*x+epsilon)
+ m1 <- lm(y ~ x,data=nulldata)
+ out <- summary(m1) # 
+ out
+ myse <- out$coefficients[2,2] # store the SE
+ 
+ graphdata <- tibble(x=rnorm(1e5,mean=0,sd=myse), # normal distribution
+                     xrej = ifelse(x >= qnorm(1-(myalf)/2, mean=0, sd=myse),x,NA), 
+                        # x's that fall in the rejection region based on alpha
+                     xrej2 = ifelse(-x >= qnorm(1-(myalf)/2, mean=0, sd=myse),x,NA), 
+                        # x's that fall in the rejection region based on alpha
+                     y=dnorm(x,mean=0,sd=myse)
+ )
+ 
+ ggplot(data=graphdata) + 
+   geom_density(aes(x)) + 
+   geom_area(data=subset(graphdata, !is.na(xrej)),aes(x=x,y=y),fill="gray") + 
+   geom_area(data=subset(graphdata, !is.na(xrej2)),aes(x=x,y=y),fill="gray") + 
+   geom_vline(xintercept=-0.5,linetype='dashed',color='red') + 
+   theme_minimal() + 
+   labs(x="Estimated Beta",y="Density")
+ 
+# Calculate p-value of our estimated beta
+1-pnorm(out$coefficients[2,1],mean=0,sd=out$coefficients[2,2])
+
+# Calculate the t-statistic of our estimated beta
+out$coefficients[2,1]/out$coefficients[2,2] # Here, critical value is 1.96
+```
+
 ## Package Citations
 
 ```{r, include=FALSE}
@@ -273,3 +321,77 @@ knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all pac
 
 # DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS. 
 ```
+
+## Appendix
+
+### Total Probability
+
+How does my probability of having a chronic illness evolve over time? Let's first consider just two periods.
+
+```{r total-prob}
+# Total probability 
+day1 <- p_chronic # On first day, probability of illness is the known probability
+day2 <- p_chronic * (1-p_chronic) # The probability of being healthy on day1, then developing an illness on the second day 
+
+totalprob <- day1+day2 # Total probability is sum over time
+```
+
+Now suppose we want to know -- how long would I have to survive until my total probability was higher than 0.15? For this, we'll need a function.
+
+```{r total-prob-function}
+dayprob <- function(n) { 
+    # This function returns the probability of (i) being healthy until day n, then (ii) getting a chronic condition on day n 
+  return(p_chronic * (1-p_chronic)^(n-1))
+} 
+
+# Now let's apply the function
+mydata <- tibble( x=seq(1,10,by=1) ) %>%  # Periods 1 through 10
+  mutate(dayprob=dayprob(x)) %>% # Daily probability
+  mutate(totalprob = cumsum(dayprob)) # Total probability = sum of dailies 
+
+# What's the first day after which total prob is > 0.15?
+answer <- mydata %>% 
+  mutate(tokeep = totalprob>0.15) %>% 
+  filter(tokeep==1) %>% 
+  mutate(first = min(x)) %>% 
+  filter(row_number()==1) %>% 
+  pull(first)
+
+print(paste0("The number of days before totalprob > 0.15 is ", answer ,sep=""))
+```
+
+### Bayes' Rule
+
+Let's look at how learning information about my health state should lead you to update yours. we'll define this as a function again that just implements Bayes' rule:
+
+$$ P(A|B) = \frac{P(B|A)P(A)}{P(B)}$$
+
+```{r bayes}
+# Update function for p_chronic
+update_chronic <- function(oldprob) { 
+  p_x1_you_given_x3_me <- .7 
+    # Experiment with changing this probability to see how the graph below changes
+    # What happens if this is .75? .1? What does changing this mean in terms of the example? 
+  
+  p_x1_you_given_x1_me <- .75
+  num <- p_x1_you_given_x3_me * oldprob
+  den <- p_x1_you_given_x3_me * oldprob + p_x1_you_given_x1_me * (1-oldprob)
+  return(num/den) # Why write it this way? Just so each term is easily digestable. 
+    # Think of your code reader, not just the output!
+}
+```
+
+Once the function is defined, we run a simple simulation: how do our beliefs update for each day that our other family members do **not** come down with an illness?
+
+```{r bayes-simulation}
+mydata <- rep(NA, 100) # Set blanks for 100 days
+mydata[1] <- .05 # Set first probability at .05
+for (i in 2:100) { 
+  mydata[i] <- update_chronic(mydata[i-1])
+}
+
+# Now plot
+mydata <- tibble(mydata) %>% mutate(x=row_number())
+ggplot(mydata,aes(x,mydata)) + geom_point() + theme_minimal() + labs(x = "Day", y = "P(x_3)")
+```
+

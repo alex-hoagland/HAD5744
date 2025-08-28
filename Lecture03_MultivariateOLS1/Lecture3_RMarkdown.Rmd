@@ -39,29 +39,40 @@ set.seed(122333) # Setting the seed helps to make random number generators give 
 
 ## Control Variables
 
-First, let's explore the relationship between A1C checks and hospitalizations. We'll use some fake data for this, so don't trust any of the results you see reported here! 
+First, let's explore the relationship between crop loss and child health. We'll use some fake data for this, so don't trust any of the results you see reported here! 
 
 ```{r fake-data,echo=F}
-# Create a data set of 1000 physicians, with some rates of hospitalizations, A1Cs, and average patient education (in years)
+# Create a data set of 10000 children, with some measures of health, shocks, and income
 
-covmat <- matrix(c(1,.5,-.2,.5,1,.5,-.2,.5,1),nrow=3,ncol=3) # Covariance matrix used to simulate the data
-mydata <- rnorm_multi(1000,3,0,1,covmat,varnames=c("hospitalizations","a1cs","education"))
+# first, start with the independent variables 
+mydata <- data.frame(income = rlnorm(n=10000,8.5,1.5)) # income
+
+# add in shocks as a binary indicator that occurs with probability 0.2 if income is below average and 0.1 if income is above average
+mydata <- mydata %>% mutate(shock = runif(n=10000,0,1)) %>% mutate(medinc = median(income))
+mydata <- mydata %>% mutate(croploss = ifelse(shock < 0.2 & income <= medinc, 1, 
+                                              ifelse(shock < 0.1 & income >= medinc, 1, 0)))
+
+# define a "true" model 
+mydata <- mydata %>% mutate(shock = rnormal(n=10000, 0, 3))
+mydata <- mydata %>% mutate(health = -1-0.479*croploss+0.25*income+shock) %>% 
+  select(-c(shock))
+
 view(mydata) # this command lets us look at the data (but we don't want it to print out into the rmd, hence the echo=F)
 ```
 
 ### How do controls change the results?
 
-If we don't include controls, we get a simple regression of just the effect of A1Cs on hospitalizations: 
+If we don't include controls, we get a simple regression: 
 ```{r simple}
-lm_simple <- lm(hospitalizations ~ a1cs, data=mydata)
+lm_simple <- lm(health ~ croploss, data=mydata)
 summary(lm_simple)
 ```
 
-But if we control for average patient education, the results change: 
+But if we control for income, the results change: 
 
 ```{r control-education}
-# Now, control for education 
-lm_complex <- lm(hospitalizations ~ a1cs + education, data=mydata)
+# Now, control for income 
+lm_complex <- lm(health ~ croploss + income, data=mydata)
 summary(lm_complex)
 ```
 How can we visualize these regressions? Let's use a coefficient plot! 
@@ -80,8 +91,8 @@ m2_tidy <- tidy(lm_complex) %>%
 # "glue" model data frames together
 all_models <- bind_rows(m1_tidy, m2_tidy) %>% 
   filter(term != "(Intercept)") %>% # remove the intercept
-  relabel_predictors(c(a1cs = "Rate of A1C checks", 
-                       education = "Average Education"))
+  relabel_predictors(c(croploss = "Crop Loss Shock", 
+                       income = "Household Income"))
 
 # An example of customization (compare with slides)
 dwplot(all_models, 
@@ -90,10 +101,9 @@ dwplot(all_models,
                        shape = model, size=1.2)), 
        whisker_args = list(size=1)) + 
   theme_bw() +
-  labs(title = "Predicting Diabetic Hospitalization Rates", 
+  labs(title = "Predicting Child Health Outcomes", 
        x = "Coefficient Estimate with 95% CIs", 
-       y = "", size="",
-       caption = "Note: All independent variables are measured as % relative to baseline mean.") +
+       y = "", size="") +
   geom_vline(xintercept = 0, linetype = "dashed", size=1) +
   theme(plot.title = element_text(face="bold"),
         legend.position = "bottom",
@@ -105,128 +115,23 @@ dwplot(all_models,
 # ggsave(here("coefplot.png"), width = 8, height = 6, dpi = 300) # save the plot
 ```
 
-## Inference in regression 
-
-### How to obtain standard errors
-Just like a lot of other things, standard errors are stored in the lm object! 
-
-```{r ses}
-myout <- summary(lm_complex)
-myout$coefficients[,2]
-```
-
-### Hypothesis testing
-
-Let's start with a population model where: 
-$$ y = 3 + .2x + \varepsilon, \varepsilon \sim \mathcal{N}(0,1).$$
-
-We will use this DGP to create a small data set ($N=200$) and run a simple regression. Then, we will save the coefficient $\beta_1$ and its standard error. 
-```{r hyp-test}
-set.seed(0326)
-nulldata <- tibble(x=rnorm(200),
-                 epsilon=rnorm(200),
-                 y=3+.2*x+epsilon)
-m1 <- lm(y ~ x,data=nulldata)
-out <- summary(m1) # I get a first estimate of beta = 0.12, and a SE = 0.064
-myse <- out$coefficients[2,2] # store the SE
-```
-
-Our test, formally, is of the null hypothesis: 
-
-$$ \mathcal{H}_0: \beta_1 = 0. $$
-Let's plot our regression estimate against the sampling distribution of the null hypothesis
-```{r hyp-test-2} 
-myalf <- .05 # State the rejection probability
-
-# Plot my estimate against the sampling distribution of the null hypothesis 
-graphdata <- tibble(x=rnorm(1e4,mean=0,sd=myse), # normal distribution
-                    xrej = ifelse(x >= qnorm(1-(myalf)/2, mean=0, sd=myse),x,NA), # x's that fall in the rejection region based on alpha
-                    xrej2 = ifelse(-x >= qnorm(1-(myalf)/2, mean=0, sd=myse),x,NA), # x's that fall in the rejection region based on alpha
-                    y=dnorm(x,mean=0,sd=myse)
-)
-
- ggplot(data=graphdata) + 
-  geom_density(aes(x)) + 
-  geom_area(data=subset(graphdata, !is.na(xrej)),aes(x=x,y=y),fill="gray") + 
-   geom_area(data=subset(graphdata, !is.na(xrej2)),aes(x=x,y=y),fill="gray") + 
-  geom_vline(xintercept=0.12,linetype='dashed',color='red') + 
-  theme_minimal() + 
-  labs(x="Estimated Beta",y="Density")
-```
-
-So what do we conclude from the test? 
-
-#### One-sided testing
-
-What happens if I perform a one-sided test? This changes the rejection region (is that disingenious?)
-```{r hyp-test-3} 
-graphdata <- tibble(x=rnorm(1e5,mean=0,sd=myse), # normal distribution
-                     xrej = ifelse(x >= qnorm(1-(myalf), mean=0, sd=myse),x,NA), 
-                        # x's that fall in the rejection region based on alpha
-                     y=dnorm(x,mean=0,sd=myse)
- )
- 
- ggplot(data=graphdata) + 
-   geom_density(aes(x)) + 
-   geom_area(data=subset(graphdata, !is.na(xrej)),aes(x=x,y=y),fill="gray") + 
-   geom_vline(xintercept=0.12,linetype='dashed',color='red') + 
-   theme_minimal() + 
-   labs(x="Estimated Beta",y="Density")
-```
-
-#### Statistical power
-
-In general, adding more data adds to our statistical power -- the probability that we will uncover an effect that is truly in the DGP. Let's increase our sample size to 20,000 and see how this affects our standard error (and hence, our test statistic)
-
-```{r hyp-test-4}
- nulldata <- tibble(x=rnorm(20000),
-                  epsilon=rnorm(20000),
-                  y=3+.2*x+epsilon)
- m1 <- lm(y ~ x,data=nulldata)
- out <- summary(m1) # 
- out
- myse <- out$coefficients[2,2] # store the SE
- 
- graphdata <- tibble(x=rnorm(1e5,mean=0,sd=myse), # normal distribution
-                     xrej = ifelse(x >= qnorm(1-(myalf)/2, mean=0, sd=myse),x,NA), 
-                        # x's that fall in the rejection region based on alpha
-                     xrej2 = ifelse(-x >= qnorm(1-(myalf)/2, mean=0, sd=myse),x,NA), 
-                        # x's that fall in the rejection region based on alpha
-                     y=dnorm(x,mean=0,sd=myse)
- )
- 
- ggplot(data=graphdata) + 
-   geom_density(aes(x)) + 
-   geom_area(data=subset(graphdata, !is.na(xrej)),aes(x=x,y=y),fill="gray") + 
-   geom_area(data=subset(graphdata, !is.na(xrej2)),aes(x=x,y=y),fill="gray") + 
-   geom_vline(xintercept=0.12,linetype='dashed',color='red') + 
-   theme_minimal() + 
-   labs(x="Estimated Beta",y="Density")
- 
-# Calculate p-value of our estimated beta
-1-pnorm(out$coefficients[2,1],mean=0,sd=out$coefficients[2,2])
-
-# Calculate the t-statistic of our estimated beta
-out$coefficients[2,1]/out$coefficients[2,2] # Here, critical value is 1.96
-```
-
 ## Dummy Variables
 
-Let's add another control in the form of a dummy variable: physician sex (we want this to be binary for the purposes of the regression, so we will use sex instead of gender identity).
+Let's add another control in the form of a dummy variable: child indigenous identity.
 
 ```{r unorganized}
-mydata <- mydata %>% mutate(female = ifelse(runif(nrow(mydata))>0.6, 1, 0),
-                            male = 1-female)
+mydata <- mydata %>% mutate(indig = ifelse(runif(nrow(mydata))>0.85, 1, 0),
+                            nindig = 1-indig)
 
-# What is the gender composition of our sample?
-summary(mydata$female)
+# What is the composition of our sample?
+summary(mydata$indig)
 ```
 
 Now let's include this dummy variable in the regression, and compare all three results in a regression table using modelsummary 
 
 ```{r dummy-reg}
 # Linear model with dummy variable included
-lm_dummy <- lm(hospitalizations ~ a1cs + education + female, data=mydata)
+lm_dummy <- lm(health ~ croploss + income + indig, data=mydata)
 summary(lm_dummy) # What does it mean that this is significant? Should it be? 
   # Return to this at the end of the lecture when we talk about validity traps
 
@@ -237,28 +142,28 @@ msummary(list("Simple"=lm_simple,"One Control"=lm_complex,"Full"=lm_dummy),
 
 ### Dummy Variable Trap
 
-What happens if we include both $1\{male\}$ and $1\{female\}$ in a regression? 
+What happens if we include both $1\{indig\}$ and $1\{not indig\}$ in a regression? 
 
 ```{r dvt}
-lm_dummytrap <- lm(hospitalizations ~ a1cs + education + female + male, data=mydata)
+lm_dummytrap <- lm(health ~ croploss + income + indig + nindig, data=mydata)
 summary(lm_dummytrap)
   # Code can usually detect the dummy variable trap, but don't count on it! 
 ```
 
 ### Multiple dummy variables
 
-Finally, how does this change if we have multiple dummy variables in a set? Let's consider the region in which each physician practices. 
+Finally, how does this change if we have multiple dummy variables in a set? Let's consider the region in which each child lives.
 
 ```{r region} 
 mydata <- mydata %>% mutate(region = sample(seq(1:4),size=nrow(mydata),replace=TRUE)) 
-  # Generate a random region variable for restaurants 
+  # Generate a random region variable  
 
 # Suppose that 1=West, 2=Midwest, 3=South, 4=East
 # Need to generate three dummy variables for the regression 
 mydata <- mydata %>% mutate(region_west = (region == 1), 
                       region_midwest = (region == 2), 
                       region_south = (region == 3))
-lm_region <- lm(hospitalizations ~ a1cs + education + female + region_west + region_midwest + region_south, data=mydata)
+lm_region <- lm(health ~ croploss + income + indig + region_west + region_midwest + region_south, data=mydata)
 msummary(list("No Regions"=lm_dummy, "With Region Controls"=lm_region),
          stars=c('*' = .1, '**' = .05, '***' = .01)) 
   # Why aren't our other coefficients changed? Thoughts? 
