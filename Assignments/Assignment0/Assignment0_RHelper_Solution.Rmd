@@ -38,6 +38,7 @@ d[19:21] # question (a)
 d[which(d < 2000)] # question (b)
 length(d[which(d > 6000)]) # question (c)
 ```
+
 The answers to the specific questions here are: 
 (a)	6555,6800, and 7035
 (b)	435, 860, 1275, and 1680

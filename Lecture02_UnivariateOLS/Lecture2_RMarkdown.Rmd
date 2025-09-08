@@ -210,7 +210,7 @@ as_tibble(t(sapply(lm, coef))) %>%
 Just like a lot of other things, standard errors are stored in the lm object! 
 
 ```{r ses}
-myout <- summary(lm_complex)
+myout <- summary(reg_tb)
 myout$coefficients[,2]
 ```
 
@@ -307,19 +307,6 @@ In general, adding more data adds to our statistical power -- the probability th
 
 # Calculate the t-statistic of our estimated beta
 out$coefficients[2,1]/out$coefficients[2,2] # Here, critical value is 1.96
-```
-
-## Package Citations
-
-```{r, include=FALSE}
-print("=============================Works Cited=============================")
-loadedNamespaces() %>%
-map(citation) %>%
-print(style = "text") # Adds citations for each package to end of .rmd file
-
-knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
-
-# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS. 
 ```
 
 ## Appendix
