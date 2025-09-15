@@ -32,43 +32,6 @@ set.seed(122333) # Setting the seed helps to make random number generators give 
 ################################################################################
 ```
 
-## Probability Review
-
-### Assigning Probabilities
-
-Let's keep the example of **health state** as a random variable, and assign some (made-up) probabilities:
-
-```{r sample-probs}
-##### Probability Review #####
-p_healthy <- 0.75 # Assign 3 main probabilities
-p_acute <- 0.2
-p_chronic <- 0.05
-```
-
-We also need to have some joint probabilities that tell us if there is any overlap between states. These help us calculate **conditional probabilities**, or how information about part of my state informs me about the rest of my health state.
-
-```{r joint-probs}
-p_acute_chronic <- 0.02 # Assign joint probabilities
-p_healthy_acute <- 0
-p_healthy_chronic <- 0
-p_healthy_acute_chronic <- 0
-
-# Conditional probabilities
-p_chronic_givenacute <- p_acute_chronic / p_acute
-```
-
-### Conditional Probabilities and Independence
-
-We can then test if the information is *independent* -- does knowing I have an acute condition inform me of the probability of a chronic one?
-
-```{r test-independence}
-p_chronic_givenacute == p_chronic * p_acute
-```
-
-### Expectations and Variance
-
-How can we find these in data? Just by using descriptive commands, as discussed below! 
-
 ## Regression
 
 ### Preliminaries
@@ -311,7 +274,45 @@ out$coefficients[2,1]/out$coefficients[2,2] # Here, critical value is 1.96
 
 ## Appendix
 
-### Total Probability
+### Probability Review
+
+#### Assigning Probabilities
+
+Let's keep the example of **health state** as a random variable, and assign some (made-up) probabilities:
+
+```{r sample-probs}
+##### Probability Review #####
+p_healthy <- 0.75 # Assign 3 main probabilities
+p_acute <- 0.2
+p_chronic <- 0.05
+```
+
+We also need to have some joint probabilities that tell us if there is any overlap between states. These help us calculate **conditional probabilities**, or how information about part of my state informs me about the rest of my health state.
+
+```{r joint-probs}
+p_acute_chronic <- 0.02 # Assign joint probabilities
+p_healthy_acute <- 0
+p_healthy_chronic <- 0
+p_healthy_acute_chronic <- 0
+
+# Conditional probabilities
+p_chronic_givenacute <- p_acute_chronic / p_acute
+```
+
+#### Conditional Probabilities and Independence
+
+We can then test if the information is *independent* -- does knowing I have an acute condition inform me of the probability of a chronic one?
+
+```{r test-independence}
+p_chronic_givenacute == p_chronic * p_acute
+```
+
+#### Expectations and Variance
+
+How can we find these in data? Just by using descriptive commands, as discussed below! 
+
+
+#### Total Probability
 
 How does my probability of having a chronic illness evolve over time? Let's first consider just two periods.
 
@@ -347,7 +348,7 @@ answer <- mydata %>%
 print(paste0("The number of days before totalprob > 0.15 is ", answer ,sep=""))
 ```
 
-### Bayes' Rule
+#### Bayes' Rule
 
 Let's look at how learning information about my health state should lead you to update yours. we'll define this as a function again that just implements Bayes' rule:
 
