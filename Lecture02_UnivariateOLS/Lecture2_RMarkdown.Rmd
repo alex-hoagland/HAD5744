@@ -85,7 +85,7 @@ Rather than just seeing what the regression returns (e.g., in a table), we can a
 tb <- tb %>% 
   mutate(
     yhat1 = predict(lm(y ~ x, .)),
-    yhat2 = 0.0732608 + 5.685033*x, 
+    yhat2 = -0.14 + 5.73*x, 
     uhat1 = residuals(lm(y ~ x, .)),
     uhat2 = y - yhat2
   ) # How close are our predictions? 
@@ -103,9 +103,9 @@ tb %>%
   geom_point(size = 0.05, color = "black", alpha = 0.5) +
   geom_smooth(method = lm, color = "black") +
   annotate("text", x = -1.5, y = 30, color = "red", 
-           label = paste("Intercept = ", -0.0732608)) +
+           label = paste("Intercept = ", -0.14)) +
   annotate("text", x = 1.5, y = -30, color = "blue", 
-           label = paste("Slope =", 5.685033)) + 
+           label = paste("Slope =", 5.73)) + 
   theme_classic() + labs(x="X", y="Y")
 ```
 

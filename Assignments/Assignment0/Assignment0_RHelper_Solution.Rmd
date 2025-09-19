@@ -118,8 +118,13 @@ Using your loaded data, make a scatterplot showing the relationship between week
 # make a scatterplot showing the relationship in mydata between week_no counts when category1 includes COVID-19
 
 # note: at least for me, copilot was useful but insufficient here!
-mydata %>% filter(category_1 == "Deaths where COVID-19 was mentioned on the death certificate (ICD-10 U07.1 and U07.2)") %>% group_by(week_no) %>% summarise(mean_deaths = mean(counts)) %>% ggplot(aes(x=week_no, y=mean_deaths)) + geom_point() + geom_smooth(method="lm") + labs(x="Week Number", y = "Average COVID Deaths") + theme_minimal()
+mydata %>%
+  filter(category_1 == "Deaths where COVID-19 was mentioned on the death certificate (ICD-10 U07.1 and U07.2)") %>% 
+  group_by(week_no) %>% 
+  summarise(mean_deaths = mean(counts)) %>%
+  ggplot(aes(x=week_no, y=mean_deaths)) + geom_point() + geom_smooth(method="lm") + labs(x="Week Number", y = "Average COVID Deaths") + theme_minimal()
   # What's happening here? Did we do something wrong? 
+
 ```
 
 Notice that the data is incomplete for this! We don't have any COVID death information after week 14 (mid-March 2020?), so we wouldn't be able to use this data to think about COVID deaths over the course of 2020. So plotting the data is really helpful before we just jump off into an analysis. 
