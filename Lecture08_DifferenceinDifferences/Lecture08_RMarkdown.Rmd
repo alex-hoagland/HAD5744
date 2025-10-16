@@ -1,0 +1,248 @@
+---
+title: "Lecture 10 Code"
+author: "Alex Hoagland"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r preliminaries}
+################################################################################
+# I like to include several additional notes in the header of my files here:
+#
+# Last modified: 8/12/2022
+#
+### PURPOSE:
+  # Lecture 10 code and output file (DD)
+# 
+### NOTES:
+  # - uses the Tidyverse package and Dplyr
+################################################################################
+
+
+### 0. Load the packages we will need for this file ####
+library(tidyverse) # load the installed package for each new session of R
+library(broom)
+library(readxl) # Read in data
+library(modelsummary) # For making regression tables
+library(causaldata) # Useful toy data sets
+library(here) # Helpful in working with directories and projects
+library(AER) # this package has lots of applied metrics packages
+library(foreign) # Helpful for reading in data from Stata or other code languages 
+library(zoo) # Helpful packages for organizing dates
+library(fixest) # For fixed effects
+
+set.seed(03262020) 
+  # Setting the seed helps to make random number generators give us the same numbers across machines
+################################################################################
+```
+
+## A Simple difference-in-differences model
+
+Let's suppose that we want to identify the causal effect of Ohio's vaccine lottery on vaccine takeup. We'll use a difference-in-differences setting as our regression approach. 
+
+### Preliminaries
+
+First, let's load our data, which is a state-week panel on the takeup of COVID-19 vaccines. You can see at the end of this chunk the time trends in vaccine takeup for all states. 
+```{r load-data}
+mydata <- read.csv(here("us_state_vaccinations.csv"))
+mydata$date <- as.yearmon(mydata$date)
+
+# Trim out some "states" that we don't need
+`%!in%` <- Negate(`%in%`)
+mydata <- mydata %>% filter(location  %!in% c("American Samoa", "Bureau of Prisons", "Dept of Defense",
+                                             "Federated States of Micronesia", "Guam", "Indian Health Svc",
+                                             "Long Term Care", "Marshall Islands", "Northern Mariana Islands",
+                                             "Puerto Rico", "Republic of Palau", "United States", "Veterans Health",
+                                             "Virgin Islands"))
+
+# Group to month level
+mydata <- mydata %>% group_by(date, location) %>% 
+  summarize(total_vaccinations_per_hundred = sum(total_vaccinations_per_hundred,na.rm=T),
+            people_vaccinated_per_hundred = sum(people_vaccinated_per_hundred,na.rm=T),
+            monthly_vaccinations_per_million = sum(daily_vaccinations_per_million,na.rm=T))
+#Show rates of vaccination over time for each state
+ggplot(mydata,aes(x=date,y=monthly_vaccinations_per_million,group=location)) + geom_line() + 
+  theme_classic() + labs(x="Time",y="Monthly Vaccinations per Million")
+```
+
+### Parallel Trends
+
+We'll limit our attention for now to two relatively similar states: the treated state (Ohio) and its/our neighbor to the North/South (Michigan). Now, let's do our best to verify the parallel trends assumption. Note that tests here aren't an end-all for verifying this assumption, but they can get us started. 
+
+Let's start with a figure of the trends prior to the vaccine lottery, as well as a simple regression testing if the trends across the two states are statistically different. 
+
+```{r parallel-trends}
+# Look at two similar states: Ohio (vaccine lottery started June 2021) and Michigan
+ggplot(mydata[which(mydata$location=="Ohio"),],aes(x=date,y=monthly_vaccinations_per_million,group=location)) + geom_line() + 
+  theme_classic() + labs(x="Time",y="Monthly Vaccinations per Million") + 
+  geom_vline(xintercept = '2021.4',color='red')
+ggplot(mydata[which(mydata$location=="Michigan"),],aes(x=date,y=monthly_vaccinations_per_million,group=location)) + geom_line() + 
+  theme_classic() + labs(x="Time",y="Monthly Vaccinations per Million")+ 
+  geom_vline(xintercept = '2021.4',color='red')
+
+# Regression data -- just ohio and michigan 
+regdata <- mydata %>% filter(location %in% c("Michigan","Ohio"))
+
+# Definition of key variables
+regdata <- regdata %>% mutate(state = ifelse(location == "Ohio",1,0),
+                              post = ifelse(date >= "Jun 2021",1,0),
+                              inter = state * post)
+regdata <- regdata %>% mutate(treated = ifelse(location == "Ohio", 1, 0), 
+                              interaction = ifelse(location == "Ohio",date,0))
+
+# Statistical tests: are the two groups' trends different?
+pretrend_test <- lm(monthly_vaccinations_per_million ~ date + interaction, data=(regdata %>% filter(post == 0)))
+msummary(list(pretrend_test),
+         vcov=c(rep("robust",1)),
+         stars=c('*' = .1, '**' = .05, '***' = .01)) # Interpret each coefficient here
+```
+
+### Estimation 
+
+Now we can estimate the simple $2 \times 2$ DiD regression: 
+
+$$ vaccinations_{it}=\beta_0 + \beta_1\mathbb{I}\{treated_i\} + \beta_2\mathbb{I}\{post_t\} +\beta_3 \{treated_i \times post_t\}+\varepsilon_{it}$$
+
+
+
+```{r did-2x2}
+##### 2. Two-way DiD ####
+# Main regression
+did_simple <- lm(monthly_vaccinations_per_million ~ state + post + inter, data=regdata)
+msummary(list("Simple DID"=did_simple),
+         vcov=c(rep("robust",1)),
+         stars=c('*' = .1, '**' = .05, '***' = .01)) # Interpret each coefficient here
+```
+
+### Transformations and Parallel Trends
+
+Now let's consider what happens when we transform the data into $\log(vaccines_i)$ rather than in pure levels. 
+
+```{r logtransform}
+# Show parallel trends when you transform the data
+regdata <- regdata %>% mutate(logy = log(monthly_vaccinations_per_million))
+
+# Graph of both over time
+ggplot(data=regdata,aes(x=date,y=monthly_vaccinations_per_million,group=state,color=factor(state))) + 
+  geom_line() + theme_classic() + labs(x="Date",y="Montly Vaccinations",color="State = Ohio") + 
+  geom_vline(xintercept = 2021.417,size=1.5,color='red',linetype='dashed')
+ggplot(data=regdata,aes(x=date,y=logy,group=state,color=factor(state))) + 
+  geom_line() + theme_classic() + labs(x="Date",y="Montly Vaccinations",color="State = Ohio") + 
+  geom_vline(xintercept = 2021.417,size=1.5,color='red',linetype='dashed')
+
+# Log DID
+did_log <- lm(logy ~ state + post + inter, data=regdata)
+msummary(list("Simple DID"=did_simple,"Log(y)"=did_log),
+         vcov=c(rep("robust",2)),
+         stars=c('*' = .1, '**' = .05, '***' = .01)) # Interpret each coefficient here
+```
+
+## Generalized DiD 
+
+Let's try expanding to all states, with state and time fixed effects
+
+```{r did-full} 
+mydata <- mydata %>% mutate(state = ifelse(location == "Ohio",1,0),
+                              post = ifelse(date >= "Jun 2021",1,0),
+                              inter = state * post,
+                              logy = log(monthly_vaccinations_per_million+1))
+
+# feols clusters by the first
+# fixed effect by default, no adjustment necessary
+did_full <- feols(logy ~ inter | location + date,
+              data = mydata)
+msummary(list("Simple"=did_log,"Full"=summary(did_full)),
+         stars = c('*' = .1, '**' = .05, '***' = .01)) # Why is this different? What makes it more precise? What makes it less believable?
+```
+
+### Placebo Tests
+
+We can implement placebo tests where we alter the treatment dates or the treated states. What would these tell us about our effect? 
+
+```{r placebos}
+# Placebo Regression: Changing Treatment Dates
+placdata <- mydata %>% filter(date < "Jun 2021")
+placdata <- placdata %>% mutate(newtreat = ifelse(location == "Ohio" & date >= "Mar 2021",1,0))
+did_plac <- feols(logy ~ newtreat | location + date,
+                  data = placdata)
+msummary(list("Simple"=did_simple,"Full"=summary(did_full),"Placebo"=summary(did_plac)),
+         stars = c('*' = .1, '**' = .05, '***' = .01)) # What does this tell us? 
+
+# Can also do one where you change treatment IDs rather than dates
+```
+
+### TWFE and Dynamic Treatment Effects
+
+Now suppose that we want to recover **dynamic treatment effects** from our generalized DiD approach. Let's run the regression and visualize it in a figure. 
+
+```{r twfe}
+## Single treatment event
+# First, construct relative time variable
+regdata_dte <- mydata %>% mutate(reltime = round((as.numeric(date) - 2021.417)*12)) 
+dte <- feols(logy ~ i(reltime, state, ref = -1) | 
+                date + location, data = regdata_dte)
+
+# And use coefplot() for a graph of effects
+iplot(dte,ref.line=-0.2, 
+         ref.line.par=list(col="red",lty=1,lwd=2)) 
+```
+
+How do we interpret this result? Are there pre-trends? What does the coefficient on -1 tell us? What do post-treatment coefficients tell us?
+
+Suppose that we try to make this more believable by changing our "donor pool" of control states. Specifically, what happens if we limit attention to just states surrounding Ohio? 
+```{r twfe-limited}
+regdata_dte <- regdata_dte %>% filter(location %in% c("Ohio", "Michigan", "Indiana", "Pennsylvania", "West Virginia", "Kentucky"))
+dte2 <- feols(logy ~ i(reltime, state, ref = -1) | 
+               date + location, data = regdata_dte)
+
+# And use coefplot() for a graph of effects
+iplot(dte2,ref.line=-0.2, 
+      ref.line.par=list(col="red",lty=1,lwd=2)) 
+```
+
+How do we interpret this result? Are there pre-trends? What does the coefficient on -1 tell us? What do post-treatment coefficients tell us?
+
+### TWFE with staggered timing
+
+There were actually multiple states who implemented vaccine lotteries; suppose we want to "stack"  DiDs in such a way as to get a general idea of the effect of these lotteries on vaccination rates. 
+
+We first have to recenter our time series so that the relative time variable is centered around each state's treatment date (not just 2021.417). Note that this variable will be missing for untreated states. 
+
+```{r twfe-staggered-setup}
+# Now, the relative time variable will be different for different states -- not just centered around 2021.417
+# Other states: May 2021: NY, MD; July 2021: MA, MI (there are others)
+regdata_dte <- mydata %>% mutate(treatdate = ifelse(location %in% c("Ohio", "New York State", "Maryland"), 2021.417,
+                                                     ifelse(location %in% c("Massachusetts", "Michigan"), 2021.583,NA)), # Note the treatment date doesn't matter for non-treated states
+                                 reltime = round((as.numeric(date) - treatdate)*12)) 
+regdata_dte <- regdata_dte %>% mutate(state = ifelse(location %in% c("Ohio", "New York State", "Maryland", "Massachusetts", "Michigan"), 1, 0))
+  # Make sure to reassign "treated" states
+```
+
+Now we can run the regression and plot the results.
+
+```{r twfe-staggered}
+dte <- feols(logy ~ i(reltime, state, ref = -1) | 
+               date + location, data = regdata_dte)
+
+# And use coefplot() for a graph of effects
+iplot(dte,ref.line=-0.2, 
+      ref.line.par=list(col="red",lty=1,lwd=2)) # How do we interpret this? 
+```
+
+There are difficulties with this approach, which we will detail in two more lectures. 
+
+## Package Citations
+```{r, include=FALSE}
+print("=============================Works Cited=============================")
+loadedNamespaces() %>%
+map(citation) %>%
+print(style = "text") # Adds citations for each package to end of .rmd file
+
+knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
+
+# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS. 
+```

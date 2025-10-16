@@ -76,6 +76,7 @@ hist(data$EXPTOT) # Quiz: how would we clean this up for a ggplot figure?
 # Let's topcode and inflation-adjust this variable 
   # why would we do these? 
 data$EXPTOT <- data$EXPTOT * 1.23 # inflation adjust from 2019 to 2024 USD (https://www.in2013dollars.com/us/inflation/2019?amount=1)
+data$EXPOTOT <- data$EXPTOT / 0.73 # USD to CAD
 data$EXPTOT <- ifelse(data$EXPTOT > 250000, 250000, data$EXPTOT) # topcode
 hist(data$EXPTOT)
 data <- data %>% mutate(logEXPTOT = log(EXPTOT+1)) # log-transform for analysis
