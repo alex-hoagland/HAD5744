@@ -1,5 +1,5 @@
 ---
-title: "Lectures 7 and 8 Code"
+title: "Lectures 9 and 10 Code"
 author: "Alex Hoagland"
 date: "`r Sys.Date()`"
 output: html_document
@@ -10,19 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r preliminaries}
-################################################################################
-# I like to include several additional notes in the header of my files here:
-#
-# Last modified: 8/12/2022
-#
-### PURPOSE:
-  # Lectures 7 and 8 code and output file
-# 
-### NOTES:
-  # - uses the Tidyverse package and Dplyr
-################################################################################
-
-
 ### 0. Load the packages we will need for this file ####
 library(tidyverse) # load the installed package for each new session of R
 library(broom)
@@ -38,6 +25,7 @@ library(pscl) # For hurdle models
 library(nnet) # For multinomial logit models
 library(knitr) # Alternative table package
 library(kableExtra) # Alternative table package
+library(fixest)
 library(gtsummary) # Alternative table package
 
 set.seed(03262020) 
@@ -134,12 +122,71 @@ fixest::coefplot(m2,drop = "Constant") + theme_classic()
 
 What do these coefficients mean? Why are the logit and probit so different?
 
+### Non-Collapsibility and Odds Ratios
+Remember that interpreting **odds ratios** is difficult due to the problem of non-collapsibility. To see this, consider a simple simulated example: 
+
+```{r simulate-or}
+n <- 1000000
+x <- rbinom(n, 1, 0.5)
+z <- rnorm(n, 0, 1) # note thta x and z are uncorrelate by assumption
+# True model: logit(P(Y=1)) = -2 + 1*X + 0.5*Z
+linpred <- -2 + 1*x + 0.5*z
+p <- 1 / (1 + exp(-linpred))
+y <- rbinom(n, 1, p)
+simdata <- data.frame(y, x, z)
+
+simdata <- simdata %>% mutate(y1 = ifelse(row_number() <= 500000, y, NA), 
+                              x1 = ifelse(row_number() <= 500000, x, NA), 
+                              z1 = ifelse(row_number() <= 500000, z, NA))
+
+# Model 1: unadjusted
+sim_1 <- feglm(y1 ~ x1, data=simdata,
+          family='binomial'(link='logit')) # since we have binary data
+
+# Model 2: adjutsed for Z 
+sim_2 <- feglm(y1 ~ x1 + z1, data=simdata,
+          family='binomial'(link='logit')) # since we have binary data
+
+# Model 3: add underlying data 
+sim_3 <- feglm(y ~ x + z, data=simdata,
+          family='binomial'(link='logit')) # since we have binary data
+
+msummary(list("Unadjsuted"=sim_1,"Adjusted"=sim_2,"Adjusted, More Data"=sim_3),
+         vcov=c(rep("robust",3)),
+         stars=c('*' = .1, '**' = .05, '***' = .01))
+
+# are the coefficients on x statistically different across sim_1 and sim_2?
+b1 <- coef(sim_1)["x1"]
+b2 <- coef(sim_2)["x1"]
+se1 <- vcov(sim_1)["x1", "x1"]
+se2 <- vcov(sim_2)["x1", "x1"]
+
+# Approximate z-test for equality of coefficients (assuming independence)
+z <- (b1 - b2) / sqrt(se1 + se2)
+pval <- 2 * pnorm(-abs(z))
+pval # coefficient has totally changed!
+
+# So then the odds ratios change as well? 
+b3 <- coef(sim_3)["x"]
+or1 <- exp(b1)
+or2 <- exp(b2)
+or3 <- exp(b3)
+c(or1,or2,or3)
+
+# Do the marginal effects in each model change? 
+me1 <- avg_comparisons(sim_1)$estimate
+me2 <- avg_comparisons(sim_2)$estimate[1]
+me3 <- avg_comparisons(sim_3)$estimate[1]
+c(me1,me2,me3)
+```
+
+### Marginal Effects
 Recall that we need to compare the **marginal effects** across regressions, as the actual coefficient magnitudes are meaningless without making the appropriate transformations. Let's calculate each type of marginal effect for the logit model (doing so for the probit model is very similar)
 
 ```{r marginal-fx}
 
 # 1. Each individual marginal effect
-allmarginaleffects <- marginaleffects(m2) # Gives you individual ME for all variables/observations
+allmarginaleffects <- comparisons(m2) # Gives you individual ME for all variables/observations
 allmarginaleffects <- allmarginaleffects %>% 
   mutate(bin = ifelse(p.value > 0.1, 0, 
                       ifelse(p.value <= 0.1 & p.value > 0.05, 1, 
@@ -151,14 +198,11 @@ allmarginaleffects %>% filter(term == "recency") %>%
   labs(x="Marginal Effect", y = "Value", fill = "Significance")
 
 # 2. and 4. MER and MEM: use the datagrid() function
-summary(marginaleffects(m2, datagrid(recency = 7, frequency = 4, time = 31, grid.type = 'counterfactual')))
+avg_comparisons(m2, newdata=datagrid(recency = 7, frequency = 4, time = 31))
 
-# 3. AME
-summary(marginaleffects(m2)) # This gives you AME
+# 3. AME (most common)
+avg_comparisons(m2) # This gives you AME
 # plot_slopes(marginaleffects(m2)) # Convenience plot 
-
-# 4. MEM: 
-summary(marginaleffects(m2, datagrid()))
 ```
 
 Finally, suppose that we want to test the joint hypothesis of age and sex on coverage decisions. We can do this in a nonlinear regression model using the Wald test. To run this test, we need to have stored an object with the full model (e.g., including age and sex) and a restricted model (where, under the null hypothesis, these coefficients are forced to be zero):
