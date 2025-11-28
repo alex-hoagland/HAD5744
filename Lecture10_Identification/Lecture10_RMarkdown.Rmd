@@ -1,5 +1,5 @@
 ---
-title: "Lectures 7 and 8 Code"
+title: "Lectures 9 and 10 Code"
 author: "Alex Hoagland"
 date: "`r Sys.Date()`"
 output: html_document
@@ -93,6 +93,8 @@ We interpret these regressions, again, by looking at the marginal effects (in th
 
 ```{r me-p}
 exp(m_poisson$coefficients)-1 # What is the marginal effect for coverage? What is the rate ratio?
+
+avg_comparisons(m_poisson)
 ```
 
 ### Testing for Dispersion
