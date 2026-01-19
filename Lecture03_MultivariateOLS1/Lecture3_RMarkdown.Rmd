@@ -39,6 +39,25 @@ set.seed(122333) # Setting the seed helps to make random number generators give 
 ################################################################################
 ```
 
+What if we try to visualize the differences in income and health across both groups? What story does this tell us? 
+```{r visualize}
+# Show how average income and average health differs over croploss, in a bar graph
+mydata %>%
+  group_by(croploss) %>%
+  summarise(mean_income = mean(income),
+            mean_health = mean(health)) %>%
+  pivot_longer(cols = c(mean_income, mean_health), 
+               names_to = "variable", 
+               values_to = "value") %>%
+  ggplot(aes(x = factor(croploss), y = value, fill = variable)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Crop Loss Shock (0=No, 1=Yes)", 
+       y = "Average Value", 
+       fill = "Variable") +
+  theme_minimal()
+
+```
+
 ## Control Variables
 
 First, let's explore the relationship between crop loss and child health. We'll use some fake data for this, so don't trust any of the results you see reported here! 
@@ -60,6 +79,19 @@ mydata <- mydata %>% mutate(health = -1-0.479*croploss+0.25*income+shock) %>%
   select(-c(shock))
 
 view(mydata) # this command lets us look at the data (but we don't want it to print out into the rmd, hence the echo=F)
+```
+
+Let's look at a simple summary statistics table here: 
+```{r summary}
+mydata %>%
+  group_by(croploss) %>%
+  summarise(
+    n = n(),
+    mean_income   = mean(income),
+    median_income = median(income),
+    mean_health   = mean(health), # what is this measuring? How do we know it's a "good" measure?
+    sd_health     = sd(health)
+  ) # how would you convert this into a nice table? 
 ```
 
 ### How do controls change the results?

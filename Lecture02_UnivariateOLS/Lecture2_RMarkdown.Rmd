@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### 0. Load the packages we will need for this file ####
 library(tidyverse) # load the installed package for each new session of R
-library(here) # for file organization
+# library(here) # for file organization
 library(broom) # helps for storing regression output
 
 set.seed(122333) # Setting the seed helps to make random number generators give us the same numbers across machines
@@ -38,9 +38,9 @@ set.seed(122333) # Setting the seed helps to make random number generators give 
 
 Let's first set up our data in the case where we **know** our data generating process (DGP). Pretend that we know that
 
-$$ y = 5.5x+u $$
+$$ y = 0+5.5x+\varepsilon $$
 
-for some random variation $u$.
+for some random variation $\varepsilon$.
 
 ```{r data-setup}
 tb <- tibble(
@@ -141,14 +141,14 @@ Let's use this DGP to create a random sample of data ($N$=10,000) and run a regr
 
 ```{r unbiasedness}
 lm <- lapply( # lapply is a useful command (see ?lapply to access documentation)
-  1:1000,
+  1:10000,
   function(x) tibble(
     x = 9*rnorm(10000), # Distribution for x (rnorm(N) creates N random draws from a N(0,1) distribution)
     u = 36*rnorm(10000), # Distribution for e
     y = 3 + 2*x + u
   ) %>% 
     lm(y ~ x, .)
-) # This runs 1,000 regressions with new data every time
+) # This runs 10,000 regressions with new data every time
 # lapply is useful here since we want to resample data *and* do a regression at the same time. 
 ```
 
