@@ -55,7 +55,7 @@ data <- data %>% mutate(STATE=sample.int(50,size=nrow(data),replace=TRUE)) # Ran
 ## Data cleaning
 What does data cleaning look like? It can look like several things: 
     - Removing missing data
-    - Recoding variables
+    - Recoding variables (outcomes?)
     - Creating new variables
     - Summarizing variables
     - Creating descriptive figures
@@ -82,6 +82,12 @@ hist(data$EXPTOT)
 data <- data %>% mutate(logEXPTOT = log(EXPTOT+1)) # log-transform for analysis
 hist(data$logEXPTOT)
 data$logEXPTOT %>% summary() # did I need a +1 here? What does that tell us? 
+
+# What about another commonly used outcome: self-reported health? 
+data$HEALTH # how would you recommend we deal with this? 
+data <- data %>% mutate(srh1 = ifelse(HEALTH > 0 & HEALTH <= 2, 1, 
+                                      ifelse(HEALTH > 2 & HEALTH < 7, 0, NA)), 
+                        srh2 = ifelse(HEALTH > 0 & HEALTH < 7, HEALTH, NA)) # what do these do? 
 
 # Now cause we're curious -- what fraction of individuals have 0 spending (and does it make sense?)
 data %>% filter(EXPTOT == 0) %>% nrow() / nrow(data) # Does this seem reasonable? 

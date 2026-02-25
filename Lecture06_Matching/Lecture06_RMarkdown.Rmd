@@ -71,7 +71,7 @@ mydata <- mydata %>% mutate(outcome_poor = ifelse(GEN_005 == 4 | GEN_005 == 5, 1
   filter(GEN_005 < 7) # 1 if poor health, 0 otherwise, drop those without responses
 mydata %>% select(outcome_poor) %>% summary() # about 12% of our sample reports poor health
 
-# first, simple regression -- what is effect of insurance on expenses? 
+# first, simple regression -- what is effect of insurance on poor health? 
 m1 <- lm(outcome_poor ~ treated,data=mydata)
 msummary(list(m1),
          vcov=c("robust"),
@@ -128,7 +128,7 @@ bin_means %>% ggplot(aes(x=DHHGAGE,y=diff)) + geom_point(size=2) +
   labs(x="Age Group", y="Difference in Pr(Poor Health), Treated - Untreated")
 ```
 
-Using this adjustment changes the ATE from 0.16 to 0.14. But have we dealt with all the selection? 
+Using this adjustment changes the ATE a bit, but still significant and positive. But do we think we have we dealt with all the selection? 
 
 ### On your own: subclassification packages
 
@@ -231,12 +231,12 @@ Now we can use the ``MatchIt`` package to do some nearest neighbor matching. How
 covariates <- mydata %>% select(starts_with("cov")) %>% names() # a list of all the covariates
 myformula <- as.formula(paste("treated",paste(covariates, collapse="+"), sep="~")) # what does this do? 
 
-mymatches_nn <- matchit(myformula, 
-                     data=mydata,
+mymatches_nn <- matchit(myformula, # what to match on
+                     data=mydata, # where to match
                      method='nearest', # Matching method -- see ?matchit
                      distance='scaled_euclidean', # metric for distance
                      replace=TRUE, # do we use replacements in matches?
-                     ratio=10, # how many matches are we looking for?
+                     ratio=1, # how many matches are we looking for?
                      verbose=TRUE) # print output of package process
 summary(mymatches_nn) # Look at new (A) balance and (B) sample size
 # View(mymatches_nn) # Look at objects returned if you want
