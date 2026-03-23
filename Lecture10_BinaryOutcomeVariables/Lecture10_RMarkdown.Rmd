@@ -35,7 +35,7 @@ set.seed(03262020)
 
 ## Linear Probability Models
 
-Suppose we are estimated in the effect of how recently someone donated blood on whether or not they donated in March 2007. Let's first estimate a linear probability model:
+Suppose we are estimated in the effect of how recently someone donated blood on whether or not they donated in March 2007. *What's the question here?* Let's first estimate a linear probability model:
 
 ```{r lpm}
 mydata <- FFTrees::blood # data on blood donation 
@@ -43,7 +43,7 @@ mydata <- mydata %>% rename(total_donated = total)
 mydata %>% summary() 
 
 # Main (binary) outcome: did they donate in March 2007
-m1 <- lm(donation.crit ~ recency + frequency + time, data=mydata)
+m1 <- lm(donation.crit ~ recency + frequency, data=mydata)
   # how to interpret the recency dummy?
 msummary(list("LPM"=m1),
          vcov=c("robust"),
@@ -53,15 +53,6 @@ msummary(list("LPM"=m1),
   # Note: each month of recency is associated with a 1 percentage point decline in the likelihood of donating. How relevant is that? 
 mydata %>% select(donation.crit) %>% summarize(mean = mean(donation.crit)) %>% 
   mutate(percentage_change = -.01/mean * 100) # What does this mean in context?
-
-# Alternate example: Insurance coverage as a function of enrollee age, sex, BMI, smoker status, and the number of children in the home. Let's estimate and interpret the LPM.
-# mydata <- readxl::read_xlsx(here("HealthExpenses.xlsx"))
-# 
-# # Main (binary) outcome: who has coverage?
-# m1 <- lm(coverage ~ age + sex + bmi + children + smoker,data=mydata)
-# msummary(list("LPM"=m1),
-#          vcov=c("robust"),
-#          stars=c('*' = .1, '**' = .05, '***' = .01))
 ```
 
 One thing that we need to be concerned about with an LPM is predicted probabilities that fall outside of the unit interval (e.g., are not probabilities). Does that happen here? How does the model do for prediction generally?
@@ -87,11 +78,11 @@ Instead of an LPM, let's try estimating logit and probit models of the same equa
 
 # Logit
 library(fixest) 
-m2 <- feglm(donation.crit ~ recency + frequency + time, data=mydata,
+m2 <- feglm(donation.crit ~ recency + frequency, data=mydata,
           family='binomial'(link='logit')) # since we have binary data
 
 # Probit
-m3 <- feglm(donation.crit ~ recency + frequency + time, data=mydata,
+m3 <- feglm(donation.crit ~ recency + frequency, data=mydata,
           family='binomial'(link='probit')) # since we have binary data
 
 msummary(list("LPM"=m1,"Logit"=m2,"Probit"=m3),
@@ -128,7 +119,7 @@ Remember that interpreting **odds ratios** is difficult due to the problem of no
 ```{r simulate-or}
 n <- 1000000
 x <- rbinom(n, 1, 0.5)
-z <- rnorm(n, 0, 1) # note thta x and z are uncorrelate by assumption
+z <- rnorm(n, 0, 1) # note that x and z are uncorrelated by assumption
 # True model: logit(P(Y=1)) = -2 + 1*X + 0.5*Z
 linpred <- -2 + 1*x + 0.5*z
 p <- 1 / (1 + exp(-linpred))
@@ -205,18 +196,32 @@ avg_comparisons(m2) # This gives you AME
 # plot_slopes(marginaleffects(m2)) # Convenience plot 
 ```
 
-Finally, suppose that we want to test the joint hypothesis of age and sex on coverage decisions. We can do this in a nonlinear regression model using the Wald test. To run this test, we need to have stored an object with the full model (e.g., including age and sex) and a restricted model (where, under the null hypothesis, these coefficients are forced to be zero):
+So then what kind of model should we prefer? Let's report the LPM, probit, and logit together in a table, using the average marginal effect for each 
 
-```{r wald}
-# Full model is m2 -- already estimated
-restricted <- feglm(coverage ~ bmi + children + smoker,data=mydata,
-          family='binomial'(link='logit')) 
-  # Note: full and restricted model need to be estimated with same package
-  # Restricted model is where age and sex are both 0
-lmtest::waldtest(m2,restricted) 
+```{r model-comparison}
+# average marginal effects
+# for lm(), avg_slopes() returns the same substantive quantity as the coefficient
+ame1 <- avg_slopes(m1, variables = c("recency", "frequency"), vcov = "HC1")
+ame2 <- avg_slopes(m2, variables = c("recency", "frequency"), vcov = "HC1")
+ame3 <- avg_slopes(m3, variables = c("recency", "frequency"), vcov = "HC1")
+
+# table
+modelsummary(
+  list(
+    "LPM"    = ame1,
+    "Logit"  = ame2,
+    "Probit" = ame3
+  ),
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars = c("*" = .1, "**" = .05, "***" = .01),
+  coef_map = c(
+    "recency"   = "Recency",
+    "frequency" = "Frequency"
+  ),
+  gof_omit = ".*"
+) # which model should we prefer here? 
 ```
-
-What does this test tell us?
 
 ## Poisson Regression
 
