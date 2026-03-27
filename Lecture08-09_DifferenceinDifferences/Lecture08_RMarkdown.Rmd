@@ -95,7 +95,7 @@ regdata <- regdata %>% mutate(treated = ifelse(location == "Ohio", 1, 0),
                               interaction = ifelse(location == "Ohio",date,0))
 
 # Statistical tests: are the two groups' trends different?
-pretrend_test <- lm(monthly_vaccinations_per_million ~ date + interaction, data=(regdata %>% filter(post == 0)))
+pretrend_test <- lm(monthly_vaccinations_per_million ~ date + interaction + treated, data=(regdata %>% filter(post == 0)))
 msummary(list(pretrend_test),
          vcov=c(rep("robust",1)),
          stars=c('*' = .1, '**' = .05, '***' = .01)) # Interpret each coefficient here
@@ -151,8 +151,7 @@ mydata <- mydata %>% mutate(state = ifelse(location == "Ohio",1,0),
                               inter = state * post,
                               logy = log(monthly_vaccinations_per_million+1))
 
-# feols clusters by the first
-# fixed effect by default, no adjustment necessary
+# feols clusters by the first fixed effect by default, no adjustment necessary
 did_full <- feols(logy ~ inter | location + date,
               data = mydata)
 msummary(list("Simple"=did_log,"Full"=summary(did_full)),
@@ -183,8 +182,7 @@ Now suppose that we want to recover **dynamic treatment effects** from our gener
 ## Single treatment event
 # First, construct relative time variable
 regdata_dte <- mydata %>% mutate(reltime = round((as.numeric(date) - 2021.417)*12)) 
-dte <- feols(logy ~ i(reltime, state, ref = -1) | 
-                date + location, data = regdata_dte)
+dte <- feols(logy ~ i(reltime, state, ref = -1) | location + date, data = regdata_dte)
 
 # And use coefplot() for a graph of effects
 iplot(dte,ref.line=-0.2, 
@@ -196,8 +194,7 @@ How do we interpret this result? Are there pre-trends? What does the coefficient
 Suppose that we try to make this more believable by changing our "donor pool" of control states. Specifically, what happens if we limit attention to just states surrounding Ohio? 
 ```{r twfe-limited}
 regdata_dte <- regdata_dte %>% filter(location %in% c("Ohio", "Michigan", "Indiana", "Pennsylvania", "West Virginia", "Kentucky"))
-dte2 <- feols(logy ~ i(reltime, state, ref = -1) | 
-               date + location, data = regdata_dte)
+dte2 <- feols(logy ~ i(reltime, state, ref = -1) | location + date, data = regdata_dte)
 
 # And use coefplot() for a graph of effects
 iplot(dte2,ref.line=-0.2, 
@@ -225,8 +222,7 @@ regdata_dte <- regdata_dte %>% mutate(state = ifelse(location %in% c("Ohio", "Ne
 Now we can run the regression and plot the results.
 
 ```{r twfe-staggered}
-dte <- feols(logy ~ i(reltime, state, ref = -1) | 
-               date + location, data = regdata_dte)
+dte <- feols(logy ~ i(reltime, state, ref = -1) | location + date, data = regdata_dte)
 
 # And use coefplot() for a graph of effects
 iplot(dte,ref.line=-0.2, 
