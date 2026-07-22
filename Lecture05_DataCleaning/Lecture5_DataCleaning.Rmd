@@ -1,7 +1,7 @@
 ---
 title: "Lecture 5 Code"
 author: "Alex Hoagland"
-date: "`r Sys.Date()`"
+date: "October 19, 2026"
 output: html_document
 ---
 

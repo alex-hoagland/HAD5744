@@ -1,7 +1,7 @@
 ---
 title: "Lecture 2 Code"
 author: "Alex Hoagland"
-date: "`r Sys.Date()`"
+date: "September 21, 2026"
 output: html_document
 ---
 
@@ -21,7 +21,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ### NOTES:
   # - uses the Tidyverse package and Dplyr
 ################################################################################
-
 
 ### 0. Load the packages we will need for this file ####
 library(tidyverse) # load the installed package for each new session of R
@@ -72,7 +71,6 @@ There's **a lot** we can do in R with regressions. Let's try some!
 ```{r model-viz}
 # Looking at your model output
 reg_tb <- lm(y ~ x, data=tb) # Store regression as an object 
-
 
 summary(reg_tb) # gives you a full summary
 regdata <- broom::tidy(reg_tb, conf.int=TRUE) # Stores regression output in a data frame
@@ -162,12 +160,62 @@ as_tibble(t(sapply(lm, coef))) %>%
   ggplot()+
   geom_histogram(aes(x), binwidth = 0.01,fill="gray",color='black') + 
   theme_minimal() + 
-  labs(x="Estimated Slope Coefficient", y="Count",title="Distribution of Slope Coefficients") + 
+  labs(x="Estimated Slope Coefficient", y="Count",title="Distribution of Slope Coefficients") +
   geom_vline(xintercept=2,color='red')
 ```
 
+### Omitted variable bias
 
-## Inference in regression 
+We just showed OLS is unbiased *when the regression assumptions hold*. But what happens when they **don't** -- specifically, when we leave a variable out of the model that belongs in it?
+
+Imagine a new Type 2 diabetes drug. Sicker patients (higher `severity`) are more likely to be put on the drug **and** to have worse blood-sugar control (higher `A1c`). Suppose the **true** DGP is
+
+$$ A1c = 8 - 0.8 \times Drug + 1.2 \times Severity + \varepsilon. $$
+
+So the drug truly *lowers* A1c by 0.8 points. The problem is that `severity` is a confounder: it drives both who gets the drug and the outcome. Let's simulate this.
+
+```{r ovb-dgp}
+set.seed(5744)
+n <- 2000
+ovb <- tibble(
+  severity = rnorm(n),                             # latent sickness (unobserved by naive analyst)
+  drug     = rbinom(n, 1, plogis(1.3 * severity)), # sicker patients more likely to be treated
+  A1c      = 8 - 0.8*drug + 1.2*severity + rnorm(n, 0, 0.5) # TRUE drug effect is -0.8
+)
+```
+
+If we regress `A1c` on `drug` alone -- omitting `severity` -- what do we get?
+
+```{r ovb-naive}
+naive <- lm(A1c ~ drug, data = ovb)
+broom::tidy(naive) # the drug coefficient is POSITIVE: the drug looks harmful!
+```
+
+Now put the omitted confounder back in:
+
+```{r ovb-adjusted}
+adjusted <- lm(A1c ~ drug + severity, data = ovb)
+broom::tidy(adjusted) # the drug coefficient flips to about -0.8: the true effect
+```
+
+The estimate didn't just shrink -- it **changed sign**. And we can predict the bias exactly. The omitted-variable-bias formula says
+
+$$ \text{plim}(\hat\beta_{drug}^{\,short}) = \beta_{drug} + \beta_{severity}\times\delta, $$
+
+where $\delta$ is the slope from regressing the *omitted* variable on the *included* one:
+
+```{r ovb-decomposition}
+delta <- coef(lm(severity ~ drug, data = ovb))["drug"] # how severity differs by treatment
+b_sev <- coef(adjusted)["severity"]                    # effect of severity on A1c
+
+# The predicted bias should exactly equal the (naive - adjusted) drug coefficient:
+c(predicted_bias = as.numeric(b_sev * delta),
+  actual_gap     = as.numeric(coef(naive)["drug"] - coef(adjusted)["drug"]))
+```
+
+The two numbers match: the *entire* gap between the naive and adjusted estimates is accounted for by the omitted variable. This is exactly why we need **multivariate regression** -- our next topic.
+
+## Inference in regression
 
 ### How to obtain standard errors
 Just like a lot of other things, standard errors are stored in the lm object! 
@@ -271,115 +319,3 @@ In general, adding more data adds to our statistical power -- the probability th
 # Calculate the t-statistic of our estimated beta
 out$coefficients[2,1]/out$coefficients[2,2] # Here, critical value is 1.96
 ```
-
-## Appendix
-
-### Probability Review
-
-#### Assigning Probabilities
-
-Let's keep the example of **health state** as a random variable, and assign some (made-up) probabilities:
-
-```{r sample-probs}
-##### Probability Review #####
-p_healthy <- 0.75 # Assign 3 main probabilities
-p_acute <- 0.2
-p_chronic <- 0.05
-```
-
-We also need to have some joint probabilities that tell us if there is any overlap between states. These help us calculate **conditional probabilities**, or how information about part of my state informs me about the rest of my health state.
-
-```{r joint-probs}
-p_acute_chronic <- 0.02 # Assign joint probabilities
-p_healthy_acute <- 0
-p_healthy_chronic <- 0
-p_healthy_acute_chronic <- 0
-
-# Conditional probabilities
-p_chronic_givenacute <- p_acute_chronic / p_acute
-```
-
-#### Conditional Probabilities and Independence
-
-We can then test if the information is *independent* -- does knowing I have an acute condition inform me of the probability of a chronic one?
-
-```{r test-independence}
-p_chronic_givenacute == p_chronic * p_acute
-```
-
-#### Expectations and Variance
-
-How can we find these in data? Just by using descriptive commands, as discussed below! 
-
-
-#### Total Probability
-
-How does my probability of having a chronic illness evolve over time? Let's first consider just two periods.
-
-```{r total-prob}
-# Total probability 
-day1 <- p_chronic # On first day, probability of illness is the known probability
-day2 <- p_chronic * (1-p_chronic) # The probability of being healthy on day1, then developing an illness on the second day 
-
-totalprob <- day1+day2 # Total probability is sum over time
-```
-
-Now suppose we want to know -- how long would I have to survive until my total probability was higher than 0.15? For this, we'll need a function.
-
-```{r total-prob-function}
-dayprob <- function(n) { 
-    # This function returns the probability of (i) being healthy until day n, then (ii) getting a chronic condition on day n 
-  return(p_chronic * (1-p_chronic)^(n-1))
-} 
-
-# Now let's apply the function
-mydata <- tibble( x=seq(1,10,by=1) ) %>%  # Periods 1 through 10
-  mutate(dayprob=dayprob(x)) %>% # Daily probability
-  mutate(totalprob = cumsum(dayprob)) # Total probability = sum of dailies 
-
-# What's the first day after which total prob is > 0.15?
-answer <- mydata %>% 
-  mutate(tokeep = totalprob>0.15) %>% 
-  filter(tokeep==1) %>% 
-  mutate(first = min(x)) %>% 
-  filter(row_number()==1) %>% 
-  pull(first)
-
-print(paste0("The number of days before totalprob > 0.15 is ", answer ,sep=""))
-```
-
-#### Bayes' Rule
-
-Let's look at how learning information about my health state should lead you to update yours. we'll define this as a function again that just implements Bayes' rule:
-
-$$ P(A|B) = \frac{P(B|A)P(A)}{P(B)}$$
-
-```{r bayes}
-# Update function for p_chronic
-update_chronic <- function(oldprob) { 
-  p_x1_you_given_x3_me <- .7 
-    # Experiment with changing this probability to see how the graph below changes
-    # What happens if this is .75? .1? What does changing this mean in terms of the example? 
-  
-  p_x1_you_given_x1_me <- .75
-  num <- p_x1_you_given_x3_me * oldprob
-  den <- p_x1_you_given_x3_me * oldprob + p_x1_you_given_x1_me * (1-oldprob)
-  return(num/den) # Why write it this way? Just so each term is easily digestable. 
-    # Think of your code reader, not just the output!
-}
-```
-
-Once the function is defined, we run a simple simulation: how do our beliefs update for each day that our other family members do **not** come down with an illness?
-
-```{r bayes-simulation}
-mydata <- rep(NA, 100) # Set blanks for 100 days
-mydata[1] <- .05 # Set first probability at .05
-for (i in 2:100) { 
-  mydata[i] <- update_chronic(mydata[i-1])
-}
-
-# Now plot
-mydata <- tibble(mydata) %>% mutate(x=row_number())
-ggplot(mydata,aes(x,mydata)) + geom_point() + theme_minimal() + labs(x = "Day", y = "P(x_3)")
-```
-

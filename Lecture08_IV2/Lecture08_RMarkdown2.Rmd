@@ -1,0 +1,138 @@
+---
+title: "Lecture 8 (Day 2) Code: Negative-Control Tests for an IV"
+author: "Alex Hoagland"
+date: "November 9, 2026"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r header}
+################################################################################
+# Last modified: 2026 (Day 2 add-on to the Lecture 7 IV code)
+#
+### PURPOSE:
+  # Day 2 code: negative-control ("falsification") tests to bolster an IV design
+#
+### NOTES:
+  # - Picks up the SAME simulated blood-type / waiting-time data from Day 1.
+  # - A negative control is a check where the honest answer should be "no effect."
+  #   If the instrument moves something it causally cannot, exclusion/exogeneity
+  #   is in doubt.
+################################################################################
+
+
+### 0. Load the packages we will need for this file ####
+library(tidyverse)
+library(broom)
+library(modelsummary) # For making regression tables
+library(AER)          # ivreg()
+
+set.seed(03262020) # SAME seed as Day 1 so the data are identical
+################################################################################
+```
+
+## Picking up from Day 1
+
+These falsification tests run on exactly the same simulated data we built in the
+Day 1 code (blood type as an instrument for transplant waiting time, with `age`
+as the unseen confounder). The chunk below reproduces that data set so this file
+knits on its own -- it is the Day 1 data-generating code, unchanged.
+
+```{r reproduce-day1-data}
+mydata <- data.frame(
+  id = 1:10000,
+  age = sample(seq(0,100,1),size=10000,replace=T),
+  blood_type = sample(c("O_pos", "A_pos", "B_pos", "O_neg", "A_neg", "AB_pos", "B_neg", "AB_neg"), size=10000, replace=T,
+                      prob=c(0.38, 0.34, 0.09, 0.07, 0.06, 0.03, 0.02, 0.01)),
+  wait_time = rexp(n=10000) * 100
+)
+mydata <- mydata %>% mutate(wait_time = ifelse(blood_type == "A_pos",wait_time * 0.12,
+                                        ifelse(blood_type == "A_neg", wait_time * 0.12,
+                                        ifelse(blood_type == "B_pos", wait_time * 0.46,
+                                        ifelse(blood_type == "B_neg", wait_time * 0.46,
+                                        ifelse(blood_type == "AB_pos", wait_time * 0.05,
+                                        ifelse(blood_type == "AB_neg", wait_time * 0.05,
+                                        ifelse(blood_type == "O_pos", wait_time * 0.54,
+                                               wait_time * 0.54))))))))
+mydata <- mydata %>% mutate(mortality = ifelse(wait_time > 180, sample(c(0,1), size=10000, replace = T, prob = c(0.75, 0.25)),
+                                        ifelse(wait_time > 90, sample(c(0,1), size=10000, replace = T, prob = c(0.8, 0.2)),
+                                        ifelse(wait_time > 60, sample(c(0,1), size=10000, replace = T, prob = c(0.9, 0.1)),
+                                               sample(c(0,1), size=10000, replace = T, prob = c(0.97, 0.03))))))
+mydata <- mydata %>% mutate(wait_time = wait_time * abs(age-30)/sd(age),
+                            mortality = round(mortality * abs(age-30)))
+mydata[which(mydata$mortality>1),]$mortality <- 1
+
+# The instrument, exactly as on Day 1: "rare" blood types (O/B) wait longer
+mydata <- mydata %>% mutate(rare = ifelse(blood_type %in% c("O_pos","O_neg","B_pos","B_neg"), 1, 0),
+                            wt_months = wait_time / 30)
+```
+
+## Negative-control outcome
+
+The instrument (rare blood type) should affect **mortality** only *through* longer
+waiting times. So if we invent a **placebo outcome** that has nothing to do with
+waiting time, the reduced form of that placebo on the instrument should be a
+precise **null**.
+
+Here `placebo` is pure noise -- an event unrelated to the transplant pathway (think
+of a cause of death, or an administrative event, that waiting time cannot touch).
+
+```{r nc-outcome}
+mydata <- mydata %>% mutate(placebo = rbinom(n(), 1, 0.10)) # independent of everything
+
+# Reduced form on the REAL outcome: instrument SHOULD predict mortality
+rf_real    <- lm(mortality ~ rare, data = mydata)
+# Reduced form on the PLACEBO outcome: instrument should NOT predict it
+rf_placebo <- lm(placebo   ~ rare, data = mydata)
+
+msummary(list("Real outcome (mortality)" = rf_real,
+              "Placebo outcome"          = rf_placebo),
+         vcov = c("robust","robust"),
+         stars = c('*' = .1, '**' = .05, '***' = .01))
+# We WANT: a significant coefficient on the left, and a null on the right.
+```
+
+A significant coefficient in the placebo column would be a red flag: it would mean
+the instrument is correlated with the outcome through some channel *other* than
+waiting time -- i.e., the exclusion restriction is in trouble.
+
+## Negative-control balance (predetermined covariate)
+
+A credible instrument is as-good-as-random with respect to characteristics that
+are fixed *before* treatment. Age is our confounder, and by construction blood type
+was assigned independently of it -- so a balance regression of `age` on the
+instrument should come back **null**.
+
+```{r nc-balance}
+bal <- lm(age ~ rare, data = mydata)
+msummary(list("Balance: age ~ instrument" = bal),
+         vcov = c("robust"),
+         stars = c('*' = .1, '**' = .05, '***' = .01))
+# A null here is reassuring: the instrument is not just picking up the confounder.
+```
+
+## What a *failing* negative control looks like
+
+To see the diagnostic value, build a deliberately **bad** instrument that is
+correlated with age (the confounder). It fails the balance test -- exactly the
+signal you never want to see for your real instrument.
+
+```{r nc-failing}
+mydata <- mydata %>% mutate(bad_z = as.numeric(age > 50) )  # correlated with the confounder
+bad_bal <- lm(age ~ bad_z, data = mydata)
+msummary(list("Balance: age ~ BAD instrument" = bad_bal),
+         vcov = c("robust"),
+         stars = c('*' = .1, '**' = .05, '***' = .01))
+# A large, significant coefficient => this "instrument" is entangled with the
+# confounder and would violate exogeneity.
+```
+
+## Takeaway
+
+Passing these checks does not *prove* the instrument is valid, but it removes some
+of the most common ways it could be invalid. Failing localizes the problem (which
+assumption, which confounder) and points to fixes: add controls, redefine the
+instrument, or restrict the sample.

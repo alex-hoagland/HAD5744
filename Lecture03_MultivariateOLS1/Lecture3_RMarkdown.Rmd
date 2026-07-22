@@ -1,7 +1,7 @@
 ---
 title: "Lecture 3 Code"
 author: "Alex Hoagland"
-date: "`r Sys.Date()`"
+date: "September 28, 2026"
 output:
   word_document: default
   html_document: default
@@ -23,7 +23,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ### NOTES:
   # - uses the Tidyverse package and Dplyr
 ################################################################################
-
 
 ### 0. Load the packages we will need for this file ####
 library(tidyverse) # load the installed package for each new session of R
@@ -159,7 +158,6 @@ mydata <- mydata %>% mutate(randomshock = runif(nrow(mydata)))
 mydata <- mydata %>% mutate(indig = ifelse(randomshock>0.85, 1, 0)) 
   # Suppose that 15% of our sample is indigenous
 
-
 mydata <- mydata %>% mutate(indig = ifelse(runif(nrow(mydata))>0.85, 1, 0),
                             nindig = 1-indig)
 
@@ -265,16 +263,4 @@ msummary(list("Simple"=m1,"Full"=m2), # Rename columns
 
 # Default significance stars are +/*/**/*** .1/.05/.01/.001. Social science
 # standard */**/*** .1/.05/.01 can be restored with stars=c('*' = .1, '**' = .05, '***' = .01)
-```
-
-## Package Citations
-```{r, include=FALSE}
-print("=============================Works Cited=============================")
-loadedNamespaces() %>%
-map(citation) %>%
-print(style = "text") # Adds citations for each package to end of .rmd file
-
-knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
-
-# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS. 
 ```

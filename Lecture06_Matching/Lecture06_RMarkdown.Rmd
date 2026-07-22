@@ -1,7 +1,7 @@
 ---
 title: "Code for Matching Lecture"
 author: "Alex Hoagland"
-date: "`r Sys.Date()`"
+date: "October 26, 2026"
 output: html_document
 ---
 
@@ -22,7 +22,6 @@ knitr::opts_chunk$set(echo = TRUE)
   # - uses the Tidyverse package and Dplyr
   # - the main package I like to use is the "MatchIt" package
 ################################################################################
-
 
 ### 0. Load the packages we will need for this file ####
 library(tidyverse) # load the installed package for each new session of R
@@ -130,49 +129,9 @@ bin_means %>% ggplot(aes(x=DHHGAGE,y=diff)) + geom_point(size=2) +
 
 Using this adjustment changes the ATE a bit, but still significant and positive. But do we think we have we dealt with all the selection? 
 
-### On your own: subclassification packages
-
-In case you are curious, there are helpful packages for subclassification matching, including ``stratamatch`` and ``optmatch``. See this chunk below for an example, although you will have to modify the code to get it to run.
-
-```{r example-subclassification,eval=F}
-  # Do this with package stratamatch (https://cran.r-project.org/web/packages/stratamatch/vignettes/Intro_to_stratamatch.html)
-  library(stratamatch)
-  library(optmatch) # Used for matching stratified data
-
-  m.strat <- manual_stratify(data=mydata,coverage ~ bin)
-  summary(m.strat)
-  m.strat$analysis_set # Analysis data
-  m.strat$issue_table # Any issues with strata
-  plot(m.strat, type = "hist", propensity = coverage ~ bin) # Look at propensity scores
-  mymatch <- strata_match(m.strat, coverage ~ bin, k = 1) # Match the data
-  summary(mymatch)
-  matched_data <- m.strat$analysis_set
-  matched_data$match <- as.character(mymatch)
-  matched_data %>% filter(!is.na(match)) %>% group_by(match) %>%
-    arrange(match,coverage) %>%
-    summarise(diff = expenses[2]-expenses[1]) %>%
-    ungroup() %>% summarize(mean = mean(diff)) # Matched differences are $5559, close to the method above
-
-  # We can add multiple variables
-  m.strat <- manual_stratify(data=mydata,coverage ~ bin + smoker + children)
-  summary(m.strat)
-  m.strat$analysis_set
-  m.strat$issue_table
-  plot(m.strat, type = "hist", propensity = coverage ~ bin + smoker + children)
-  mymatch <- strata_match(m.strat, coverage ~ bin + smoker + children, k = 1) # Match the data
-  summary(mymatch)
-  matched_data <- m.strat$analysis_set
-  matched_data$match <- as.character(mymatch)
-  matched_data %>% filter(!is.na(match)) %>% group_by(match) %>%
-    arrange(match,coverage) %>%
-    summarise(diff = expenses[2]-expenses[1]) %>%
-    ungroup() %>% summarize(mean = mean(diff)) # Now, matched differences go all the way down to -$45.8!
-```
-
 ## Exact matching: Multiple Variables
 
 This chunk can help you expand the matching beyond just age to include multiple variables, based only on exact matching. Also will have to update this code chunk to your particular setting. 
-
 
 ```{r exact-1, eval=F}
 treated <- mydata %>% filter(coverage == 1)
@@ -329,16 +288,4 @@ ps_match_trim <- lm(outcome_poor ~ treated + cov_prov_11 + cov_prov_12 + cov_pro
                weights=1/distance) 
 msummary(list("OLS"=m1, "Nearest Neighbor"=nn_match, "Propensity Score"=ps_match2, "Trimmed Propensity Score"=ps_match_trim),
          stars=c('*' = .1, '**' = .05, '***' = .01))
-```
-
-## Package Citations
-```{r, include=FALSE}
-print("=============================Works Cited=============================")
-loadedNamespaces() %>%
-map(citation) %>%
-print(style = "text") # Adds citations for each package to end of .rmd file
-
-knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
-
-# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS. 
 ```

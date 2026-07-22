@@ -1,14 +1,13 @@
 ---
 title: "Lecture 4 Code"
 author: "Alex Hoagland"
-date: "`r Sys.Date()`"
+date: "October 5, 2026"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
 
 ```{r header}
 ### 0. Load the packages we will need for this file ####
@@ -225,17 +224,4 @@ ggplot(allbetas,aes(x=allbetas)) + geom_histogram(fill='gray',color="black") + t
   labs(x="Estimated Betas",y="Count") + geom_vline(xintercept=0.077,color="red",size=2)
 
 sd(allbetas$allbetas) # This gives us a bootstrapped SE remarkably similar to the regression approach
-```
-
-## Package Citations
-
-```{r, include=FALSE}
-print("=============================Works Cited=============================")
-loadedNamespaces() %>%
-map(citation) %>%
-print(style = "text") # Adds citations for each package to end of .rmd file
-
-knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
-
-# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS.
 ```

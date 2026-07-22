@@ -1,7 +1,7 @@
 ---
 title: "Lecture 1 Code"
 author: "Alex Hoagland"
-date: "`r Sys.Date()`"
+date: "September 14, 2026"
 output: html_document
 ---
 
@@ -122,15 +122,4 @@ ggplot(data=sim, aes(sim))+
 
 First, make sure to cite all the packages you used -- it's just as important to give credit to coding work as it is to other types of previous scholarly work. 
 
-### Package Citations
-```{r, include=FALSE}
-print("=============================Works Cited=============================")
-loadedNamespaces() %>%
-map(citation) %>%
-print(style = "text") # Adds citations for each package to end of .rmd file
-
-knitr::write_bib(file = 'packages.bib') # Constructs a citation file for all packages used in this lecture.
-
-# DON'T FORGET TO CITE YOUR PACKAGES IN YOUR PAPERS/ASSIGNMENTS. 
-```
 Let's knit this file and save it! 
