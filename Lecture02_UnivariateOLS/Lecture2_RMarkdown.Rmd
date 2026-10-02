@@ -218,7 +218,8 @@ The two numbers match: the *entire* gap between the naive and adjusted estimates
 ## Inference in regression
 
 ### How to obtain standard errors
-Just like a lot of other things, standard errors are stored in the lm object! 
+
+Just like a lot of other things, standard errors are stored in the lm object!
 
 ```{r ses}
 myout <- summary(reg_tb)
@@ -227,10 +228,10 @@ myout$coefficients[,2]
 
 ### Hypothesis testing
 
-Let's start with a population model where: 
-$$ y = -1 - 0.5x + \varepsilon, \varepsilon \sim \mathcal{N}(0,1).$$
+Let's start with a population model where: $$ y = -1 - 0.5x + \varepsilon, \varepsilon \sim \mathcal{N}(0,1).$$
 
-We will use this DGP to create a small data set ($N=200$) and run a simple regression. Then, we will save the coefficient $\beta_1$ and its standard error. 
+We will use this DGP to create a small data set ($N=200$) and run a simple regression. Then, we will save the coefficient $\beta_1$ and its standard error.
+
 ```{r hyp-test}
 set.seed(0326)
 nulldata <- tibble(x=rnorm(200),
@@ -241,11 +242,11 @@ out <- summary(m1) # I get a first estimate of beta = , and a SE =
 myse <- out$coefficients[2,2] # store the SE
 ```
 
-Our test, formally, is of the null hypothesis: 
+Our test, formally, is of the null hypothesis:
 
-$$ \mathcal{H}_0: \beta_1 = 0. $$
-Let's plot our regression estimate against the sampling distribution of the null hypothesis
-```{r hyp-test-2} 
+$$ \mathcal{H}_0: \beta_1 = 0. $$ Let's plot our regression estimate against the sampling distribution of the null hypothesis
+
+```{r hyp-test-2}
 myalf <- .05 # State the rejection probability
 
 # Plot my estimate against the sampling distribution of the null hypothesis 
@@ -264,12 +265,13 @@ graphdata <- tibble(x=rnorm(1e4,mean=0,sd=myse), # normal distribution
   labs(x="Estimated Beta",y="Density")
 ```
 
-So what do we conclude from the test? 
+So what do we conclude from the test?
 
 #### One-sided testing
 
 What happens if I perform a one-sided test? This changes the rejection region (is that disingenious?)
-```{r hyp-test-3} 
+
+```{r hyp-test-3}
 graphdata <- tibble(x=rnorm(1e5,mean=0,sd=myse), # normal distribution
                      xrej = ifelse(x >= qnorm(1-(myalf), mean=0, sd=myse),x,NA), 
                         # x's that fall in the rejection region based on alpha

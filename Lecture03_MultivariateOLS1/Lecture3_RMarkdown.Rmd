@@ -75,6 +75,7 @@ mydata %>%
 ```
 
 What if we try to visualize the differences in income and health across both groups? What story does this tell us? 
+
 ```{r visualize}
 # Show how average income and average health differs over croploss, in a bar graph
 mydata %>%
