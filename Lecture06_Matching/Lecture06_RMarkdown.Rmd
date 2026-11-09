@@ -98,7 +98,7 @@ mydata %>%
 Let's start with matching based on a single variable: patient age group. This is already binned into just three categories: 18-34, 35-49, and 50-64. In each bin, we then construct the differences in the likelihood of ``poor health`` between those on benefits and not. This rests on the assumption that within each bin, there is no (or less) selection between benefit takeup. We then weight these differences by the relative size of each group.
 
 ```{r subclass-differences}
-# For each bin, construct the difference in expenses by insurance category 
+# For each bin, construct the difference in expenses by age 
 bin_means <- mydata %>% group_by(DHHGAGE,treated) %>% 
   summarize(outcome_poor = mean(outcome_poor)) %>% 
     # Creates bin/group means 
